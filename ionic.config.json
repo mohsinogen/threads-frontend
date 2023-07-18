@@ -1,0 +1,7 @@
+{
+  "name": "Threads",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
