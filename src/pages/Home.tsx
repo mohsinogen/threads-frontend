@@ -11,9 +11,14 @@ import {
   IonRefresherContent,
   IonTitle,
   IonToolbar,
-  useIonViewWillEnter
+  useIonViewWillEnter,
+  IonTabBar,
+  IonTabButton,
+  IonTabs,
+  IonIcon,
 } from '@ionic/react';
 import './Home.css';
+import { add, home, notifications, person, search } from 'ionicons/icons';
 
 const Home: React.FC = () => {
 
@@ -34,7 +39,7 @@ const Home: React.FC = () => {
     <IonPage id="home-page">
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Inbox</IonTitle>
+          <IonTitle>Threads</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
@@ -54,6 +59,8 @@ const Home: React.FC = () => {
           {messages.map(m => <MessageListItem key={m.id} message={m} />)}
         </IonList>
       </IonContent>
+
+     
     </IonPage>
   );
 };
