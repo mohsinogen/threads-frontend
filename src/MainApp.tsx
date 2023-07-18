@@ -33,6 +33,7 @@ import "@ionic/react/css/display.css";
 import "./theme/variables.css";
 import Login from "./pages/Login";
 import { person, home, search, notifications, add } from "ionicons/icons";
+import Profile from "./pages/Profile";
 
 setupIonicReact();
 
@@ -58,6 +59,9 @@ const MainApp: React.FC = () => {
         <Route path="/home" exact={true}>
           <Home />
         </Route>
+        <Route path="/profile" exact={true}>
+          <Profile />
+        </Route>
         <Route path="/thread/:id">
           <ViewMessage />
         </Route>
@@ -67,19 +71,19 @@ const MainApp: React.FC = () => {
           <IonIcon icon={home} />
         </IonTabButton>
 
-        <IonTabButton tab="radio" href="/radio">
+        <IonTabButton tab="search" href="/search">
           <IonIcon icon={search} />
         </IonTabButton>
 
-        <IonTabButton tab="add" href="/add">
+        <IonTabButton tab="addpost" href="/addpost">
           <IonIcon icon={add} />
         </IonTabButton>
 
-        <IonTabButton tab="library" href="/library">
+        <IonTabButton tab="notifications" href="/notifications">
           <IonIcon icon={notifications} />
         </IonTabButton>
 
-        <IonTabButton tab="search" href="/search">
+        <IonTabButton tab="profile" href="/profile">
           <IonIcon icon={person} />
         </IonTabButton>
       </IonTabBar>
