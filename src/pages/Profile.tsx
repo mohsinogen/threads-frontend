@@ -1,100 +1,205 @@
-import { IonAvatar, IonBadge, IonButton, IonButtons, IonCol, IonContent, IonIcon, IonLabel, IonPage, IonRow, IonSegment, IonSegmentButton, IonTitle, IonToolbar, useIonActionSheet } from '@ionic/react'
-import { globeOutline, menu } from 'ionicons/icons'
-import React, { useEffect, useState } from 'react'
+import {
+  IonAvatar,
+  IonBadge,
+  IonButton,
+  IonButtons,
+  IonCol,
+  IonContent,
+  IonIcon,
+  IonLabel,
+  IonPage,
+  IonRow,
+  IonSegment,
+  IonSegmentButton,
+  IonTitle,
+  IonToolbar,
+  useIonActionSheet,
+  useIonViewWillEnter,
+} from "@ionic/react";
+import { globeOutline, menu } from "ionicons/icons";
+import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router";
+import ThreadList from "../components/ThreadList/ThreadList";
+import { getThreadsByUser } from "../utils/api";
 
 function Profile() {
+  const history = useHistory();
+  const [userInfo, setUserInfo] = useState<any>({});
+  const [currTab, setCurrTab] = useState<string>("threads");
+  useIonViewWillEnter(async () => {
+    console.log("virew will enter");
 
-    const [userInfo, setUserInfo] = useState<any>({})
-    useEffect(() => {
-        const data = localStorage.getItem('userInfo');
-        if (data) {
-            setUserInfo(JSON.parse(data))
-        }
-    }, [])
-
-    const [present] = useIonActionSheet();
-
-
-    const presentSheet = () => {
-        present({
-            buttons: [
-                {
-                    text: 'Logout',
-                    role: 'destructive',
-                    data: {
-                        action: 'cancel',
-                    },
-                },
-                {
-                    text: 'Cancel',
-                    role: 'cancel',
-                    data: {
-                        action: 'cancel',
-                    },
-                },
-            ],
-        })
+    const data = localStorage.getItem("userInfo");
+    if (data) {
+      const parsedData = JSON.parse(data);
+      setUserInfo(parsedData);
+      getThreadListByUser(parsedData.token, 1, parsedData._id);
     }
+  });
 
-    return (
-        <IonPage>
-            <IonToolbar>
-                <IonButtons slot="start">
-                    <IonIcon slot="icon-only" icon={globeOutline}></IonIcon>
-                </IonButtons>
+  const [present] = useIonActionSheet();
 
-                <IonButtons slot="end">
-                    <IonIcon onClick={presentSheet} slot="icon-only" icon={menu}></IonIcon>
-                </IonButtons>
-            </IonToolbar>
-            <IonContent>
-                <IonCol>
-                    <div className="ion-padding-horizontal ion-padding-top">
-                        <IonRow>
-                            <IonCol size='9'>
-                                <IonRow>
-                                    <h1>Test User</h1>
-                                </IonRow>
-                                <IonRow>
-                                    <IonCol size='8' className='d-flex' style={{ alignItems: 'center', justifyContent: 'space-between' }}>
-                                        username{" "}<IonBadge mode='ios' color="medium">test.net</IonBadge>
-                                    </IonCol>
-                                </IonRow>
-                            </IonCol>
-                            <IonCol size='3'>
-                                <IonAvatar>
-                                    <img alt="profile img" src={userInfo.profile} />
-                                </IonAvatar>
-                            </IonCol>
-                        </IonRow>
-                        <IonRow>
-                            <IonCol size='6'>
-                                <p>This is an example bio to test bio in this app</p>
-                            </IonCol>
-                        </IonRow>
-                        <strong>{userInfo?.followers?.length} followers</strong>
-                        <IonRow className='ion-no-padding ion-padding-top'>
-                            <IonCol size='6'>
-                                <IonButton mode='ios' size='small' expand='block' fill="outline">Edit profile</IonButton>
-                            </IonCol>
-                            <IonCol size='6'>
-                                <IonButton mode='ios' size='small' expand='block' fill="outline">Share profile</IonButton>
-                            </IonCol>
-                        </IonRow>
-                    </div>
+  const presentSheet = () => {
+    present({
+      buttons: [
+        {
+          text: "Logout",
+          role: "destructive",
+          data: {
+            action: "cancel",
+          },
+          handler: () => {
+            localStorage.removeItem("userInfo");
+            history.push("/login");
+          },
+        },
+        {
+          text: "Cancel",
+          role: "cancel",
+          data: {
+            action: "cancel",
+          },
+        },
+      ],
+    });
+  };
 
-                    <IonSegment value="default">
-                        <IonSegmentButton value="default">
-                            <IonLabel>Threads</IonLabel>
-                        </IonSegmentButton>
-                        <IonSegmentButton value="segment">
-                            <IonLabel>Replies</IonLabel>
-                        </IonSegmentButton>
-                    </IonSegment>
+  const [threads, setThreads] = useState<any[]>([]);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [page, setPage] = useState<number>(1);
+
+  const getThreadListByUser = (
+    token: string,
+    page: number,
+    userId: string,
+    callback = () => {
+      /*  */
+    }
+  ) => {
+    getThreadsByUser(token, page, userId)
+      .then((res) => {
+        console.log(res.data.data.data);
+        setTotalPages(res.data.data.totalPages);
+        if (page == 1) {
+          setThreads(res.data.data.data);
+        } else {
+          setThreads([...threads, ...res.data.data.data]);
+        }
+        callback();
+      })
+      .catch((error) => {
+        callback();
+        console.log(error);
+      });
+  };
+
+  return (
+    <IonPage>
+      <IonToolbar>
+        <IonButtons slot="start">
+          <IonIcon slot="icon-only" icon={globeOutline}></IonIcon>
+        </IonButtons>
+
+        <IonButtons slot="end">
+          <IonIcon
+            onClick={presentSheet}
+            slot="icon-only"
+            icon={menu}
+          ></IonIcon>
+        </IonButtons>
+      </IonToolbar>
+      <IonContent>
+        <IonCol>
+          <div className="ion-padding-horizontal ion-padding-top">
+            <IonRow>
+              <IonCol size="9">
+                <IonRow>
+                  <h1>{userInfo.name}</h1>
+                </IonRow>
+                <IonRow>
+                  <IonCol
+                    size="9"
+                    className="d-flex"
+                    style={{
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    {userInfo?.email?.split("@")[0]}
+                    <IonBadge mode="ios" color="medium">
+                      test.net
+                    </IonBadge>
+                  </IonCol>
+                </IonRow>
+              </IonCol>
+              <IonCol size="3">
+                <IonAvatar>
+                  <img alt="profile img" src={userInfo.profile} />
+                </IonAvatar>
+              </IonCol>
+            </IonRow>
+            {userInfo.bio && (
+              <IonRow>
+                <IonCol size="6">
+                  <p>{userInfo.bio}</p>
                 </IonCol>
-            </IonContent>
-        </IonPage>
-    )
+              </IonRow>
+            )}
+            <strong>{userInfo?.followers?.length} followers</strong>
+            <IonRow className="ion-no-padding ion-padding-top">
+              <IonCol size="6">
+                <IonButton
+                  mode="ios"
+                  size="small"
+                  expand="block"
+                  fill="outline"
+                  onClick={()=>{
+                      history.push('/editprofile')
+                  }}
+                >
+                  Edit profile
+                </IonButton>
+              </IonCol>
+              <IonCol size="6">
+                <IonButton
+                  mode="ios"
+                  size="small"
+                  expand="block"
+                  fill="outline"
+                >
+                  Share profile
+                </IonButton>
+              </IonCol>
+            </IonRow>
+          </div>
+
+          <IonSegment
+            onIonChange={(ev: CustomEvent) => {
+              setCurrTab(ev.detail.value);
+            }}
+            value={currTab}
+          >
+            <IonSegmentButton value="threads">
+              <IonLabel>Threads</IonLabel>
+            </IonSegmentButton>
+            <IonSegmentButton value="replies">
+              <IonLabel>Replies</IonLabel>
+            </IonSegmentButton>
+          </IonSegment>
+          {currTab == "threads" && (
+            <ThreadList
+              onScroll={() => {
+                setPage(page + 1);
+                getThreadListByUser(userInfo.token, page + 1, userInfo._id);
+              }}
+              shouldScroll={page < totalPages}
+              threads={threads}
+            />
+          )}
+        </IonCol>
+      </IonContent>
+    </IonPage>
+  );
 }
 
-export default Profile
+export default Profile;

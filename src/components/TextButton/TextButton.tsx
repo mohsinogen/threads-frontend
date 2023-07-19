@@ -2,20 +2,18 @@ import { IonButton } from "@ionic/react";
 import React, { useContext, useRef } from "react";
 import "./TextButton.css";
 
-interface TextButtonProps {
-  clickHandler: () => void;
-}
 
-const TextButton = (props: TextButtonProps) => {
+
+const TextButton = ({clickHandler, text}:{clickHandler:()=> void,text:string}) => {
   return (
     <IonButton
       className="buttonStyle"
       expand="block"
       onClick={() => {
-        props.clickHandler();
+        clickHandler();
       }}
     >
-      Login
+      {text}
     </IonButton>
   );
 };

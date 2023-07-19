@@ -16,148 +16,19 @@ import {
   IonTabButton,
   IonTabs,
   IonIcon,
+  RefresherEventDetail,
 } from '@ionic/react';
 import './Home.css';
-import { add, home, notifications, person, search } from 'ionicons/icons';
+import { add, call, home, notifications, person, search } from 'ionicons/icons';
 import { getThreads } from '../utils/api';
 import ThreadComponent from '../components/ThreadComponent/ThreadComponent';
+import ThreadList from '../components/ThreadList/ThreadList';
 
 const Home: React.FC = () => {
 
-  const [threads, setThreads] = useState<any[]>(
-    [
-      {
-          "_id": "64b5426df4ab79d54046c6e1",
-          "author": {
-              "following": [],
-              "followers": [],
-              "_id": "64b512f21fc55cc0c341c459",
-              "name": "mohsin ansari",
-              "email": "mohsinogen@gmail.com",
-              "isAdmin": false,
-              "profile": "https://firebasestorage.googleapis.com/v0/b/my-bucket-a9016.appspot.com/o/threads%2Fprofile%2Fuser.png?alt=media&token=422128ad-8d58-4baa-b064-dd680c2a2de7",
-              "createdAt": "2023-07-17T10:07:46.014Z",
-              "updatedAt": "2023-07-17T10:07:46.014Z",
-              "__v": 0,
-              "bio": "this is an example bio"
-          },
-          "content": "Hello everyone this is my threads clone welcome here enjoy! ;-)",
-          "likes": [],
-          "parentThread": null,
-          "createdAt": "2023-07-17T13:30:21.853Z",
-          "updatedAt": "2023-07-17T13:30:21.853Z",
-          "__v": 0
-      },
-      {
-          "_id": "64b54274f4ab79d54046c6e5",
-          "author": {
-              "following": [],
-              "followers": [],
-              "_id": "64b512f21fc55cc0c341c459",
-              "name": "mohsin ansari",
-              "email": "mohsinogen@gmail.com",
-              "isAdmin": false,
-              "profile": "https://firebasestorage.googleapis.com/v0/b/my-bucket-a9016.appspot.com/o/threads%2Fprofile%2Fuser.png?alt=media&token=422128ad-8d58-4baa-b064-dd680c2a2de7",
-              "createdAt": "2023-07-17T10:07:46.014Z",
-              "updatedAt": "2023-07-17T10:07:46.014Z",
-              "__v": 0,
-              "bio": "this is an example bio"
-          },
-          "content": "Hello everyone this is my threads clone welcome here enjoy! ;-)",
-          "likes": [],
-          "parentThread": null,
-          "createdAt": "2023-07-17T13:30:28.591Z",
-          "updatedAt": "2023-07-17T13:30:28.591Z",
-          "__v": 0
-      },
-      {
-          "_id": "64b5428af4ab79d54046c6e9",
-          "author": {
-              "following": [],
-              "followers": [],
-              "_id": "64b512f21fc55cc0c341c459",
-              "name": "mohsin ansari",
-              "email": "mohsinogen@gmail.com",
-              "isAdmin": false,
-              "profile": "https://firebasestorage.googleapis.com/v0/b/my-bucket-a9016.appspot.com/o/threads%2Fprofile%2Fuser.png?alt=media&token=422128ad-8d58-4baa-b064-dd680c2a2de7",
-              "createdAt": "2023-07-17T10:07:46.014Z",
-              "updatedAt": "2023-07-17T10:07:46.014Z",
-              "__v": 0,
-              "bio": "this is an example bio"
-          },
-          "content": "Hello everyone this is my threads clone welcome here enjoy! ;-)",
-          "likes": [],
-          "parentThread": {
-              "_id": "64b54274f4ab79d54046c6e5",
-              "author": {
-                  "following": [],
-                  "followers": [],
-                  "_id": "64b512f21fc55cc0c341c459",
-                  "name": "mohsin ansari",
-                  "email": "mohsinogen@gmail.com",
-                  "isAdmin": false,
-                  "profile": "https://firebasestorage.googleapis.com/v0/b/my-bucket-a9016.appspot.com/o/threads%2Fprofile%2Fuser.png?alt=media&token=422128ad-8d58-4baa-b064-dd680c2a2de7",
-                  "createdAt": "2023-07-17T10:07:46.014Z",
-                  "updatedAt": "2023-07-17T10:07:46.014Z",
-                  "__v": 0,
-                  "bio": "this is an example bio"
-              },
-              "content": "Hello everyone this is my threads clone welcome here enjoy! ;-)",
-              "likes": [],
-              "parentThread": null,
-              "createdAt": "2023-07-17T13:30:28.591Z",
-              "updatedAt": "2023-07-17T13:30:28.591Z",
-              "__v": 0
-          },
-          "createdAt": "2023-07-17T13:30:50.328Z",
-          "updatedAt": "2023-07-17T13:30:50.328Z",
-          "__v": 0
-      },
-      {
-          "_id": "64b5428bf4ab79d54046c6ed",
-          "author": {
-              "following": [],
-              "followers": [],
-              "_id": "64b512f21fc55cc0c341c459",
-              "name": "mohsin ansari",
-              "email": "mohsinogen@gmail.com",
-              "isAdmin": false,
-              "profile": "https://firebasestorage.googleapis.com/v0/b/my-bucket-a9016.appspot.com/o/threads%2Fprofile%2Fuser.png?alt=media&token=422128ad-8d58-4baa-b064-dd680c2a2de7",
-              "createdAt": "2023-07-17T10:07:46.014Z",
-              "updatedAt": "2023-07-17T10:07:46.014Z",
-              "__v": 0,
-              "bio": "this is an example bio"
-          },
-          "content": "Hello everyone this is my threads clone welcome here enjoy! ;-)",
-          "likes": [],
-          "parentThread": {
-              "_id": "64b54274f4ab79d54046c6e5",
-              "author": {
-                  "following": [],
-                  "followers": [],
-                  "_id": "64b512f21fc55cc0c341c459",
-                  "name": "mohsin ansari",
-                  "email": "mohsinogen@gmail.com",
-                  "isAdmin": false,
-                  "profile": "https://firebasestorage.googleapis.com/v0/b/my-bucket-a9016.appspot.com/o/threads%2Fprofile%2Fuser.png?alt=media&token=422128ad-8d58-4baa-b064-dd680c2a2de7",
-                  "createdAt": "2023-07-17T10:07:46.014Z",
-                  "updatedAt": "2023-07-17T10:07:46.014Z",
-                  "__v": 0,
-                  "bio": "this is an example bio"
-              },
-              "content": "Hello everyone this is my threads clone welcome here enjoy! ;-)",
-              "likes": [],
-              "parentThread": null,
-              "createdAt": "2023-07-17T13:30:28.591Z",
-              "updatedAt": "2023-07-17T13:30:28.591Z",
-              "__v": 0
-          },
-          "createdAt": "2023-07-17T13:30:51.770Z",
-          "updatedAt": "2023-07-17T13:30:51.770Z",
-          "__v": 0
-      }
-  ]
-  );
+  const [threads, setThreads] = useState<any[]>([])
+  const [totalPages, setTotalPages] = useState<number>(1)
+  const [page, setPage] = useState<number>(1)
   const [userInfo, setUserInfo] = useState<any>({})
 
  useEffect(()=>{
@@ -165,16 +36,26 @@ const Home: React.FC = () => {
       if (data) {
         const parsedData = JSON.parse(data);
           setUserInfo(parsedData);
-         /*  getThreads(parsedData.token).then((res) => {
-            console.log(res.data.data);
-            setThreads(res.data.data.data);
-          }).catch((error) => {
-            console.log(error);
-        
-          }); */
+          getThreadList(parsedData.token, 1)
       }
   
  },[])
+
+  const getThreadList=(token:string,page:number,callback=()=>{/*  */})=>{
+    getThreads(token,page).then((res) => {
+      console.log(res.data.data.data);
+      setTotalPages(res.data.data.totalPages)
+      if(page==1){
+        setThreads(res.data.data.data);
+      }else{
+        setThreads([...threads,...res.data.data.data])
+      }
+      callback();
+    }).catch((error) => {
+      callback()
+      console.log(error);
+    });
+  }
 
   const refresh = (e: CustomEvent) => {
     setTimeout(() => {
@@ -184,13 +65,14 @@ const Home: React.FC = () => {
 
   return (
     <IonPage id="home-page">
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Threads</IonTitle>
-        </IonToolbar>
-      </IonHeader>
       <IonContent fullscreen>
-        <IonRefresher slot="fixed" onIonRefresh={refresh}>
+        
+        <IonRefresher slot="fixed" onIonRefresh={(event: CustomEvent<RefresherEventDetail>)=>{
+          setPage(1);
+          getThreadList(userInfo.token,1,()=>{
+            event.detail.complete();
+          });
+        }}>
           <IonRefresherContent></IonRefresherContent>
         </IonRefresher>
 
@@ -202,9 +84,10 @@ const Home: React.FC = () => {
           </IonToolbar>
         </IonHeader>
 
-        <IonList>
-          {threads.map(m => <ThreadComponent key={m._id} data={m} />)}
-        </IonList>
+        <ThreadList shouldScroll={page < totalPages} threads={threads} onScroll={()=>{
+          setPage(page+1);
+          getThreadList(userInfo.token,page+1);
+        }} />
       </IonContent>
 
      

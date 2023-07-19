@@ -34,6 +34,8 @@ import "./theme/variables.css";
 import Login from "./pages/Login";
 import { person, home, search, notifications, add } from "ionicons/icons";
 import Profile from "./pages/Profile";
+import Register from "./pages/Register";
+import EditProfile from "./pages/EditProfile";
 
 setupIonicReact();
 
@@ -41,7 +43,7 @@ const MainApp: React.FC = () => {
   const location = useLocation();
 
   // Define an array of routes where you want to hide the bottom tabs
-  const hiddenTabRoutes = ["/login"];
+  const hiddenTabRoutes = ["/login","/register","/editprofile"];
 
   // Check if the current route is in the hiddenTabRoutes array
   const isTabHidden = hiddenTabRoutes.includes(location.pathname);
@@ -56,11 +58,17 @@ const MainApp: React.FC = () => {
         <Route path="/login" exact={true}>
           <Login />
         </Route>
+        <Route path="/register" exact={true}>
+          <Register />
+        </Route>
         <Route path="/home" exact={true}>
           <Home />
         </Route>
         <Route path="/profile" exact={true}>
           <Profile />
+        </Route>
+        <Route path="/editprofile" exact={true}>
+          <EditProfile />
         </Route>
         <Route path="/thread/:id">
           <ViewMessage />

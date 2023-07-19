@@ -242,3 +242,9 @@ http://ionicframework.com/docs/theming/ */
 .d-flex{
   display: flex;
 }
+
+.flex-centered{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
