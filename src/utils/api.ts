@@ -6,4 +6,9 @@ const login=async(email:string, password: string)=>{
     return response;
 }
 
-export {login};
+const getThreads=async(token:string)=>{
+    const response = await Axios.get(URL+`api/threads`, {headers:{'Authorization':`Bearer ${token}`}});
+    return response;
+}
+
+export {login,getThreads};
