@@ -86,7 +86,7 @@ function CreateThread() {
                   autofocus={true}
                   mode="ios"
                   value={threads[0].content}
-                  onIonChange={(e)=>{
+                  onIonInput={(e)=>{
                     setThreads([...threads,])
                   }}
                 ></IonTextarea>

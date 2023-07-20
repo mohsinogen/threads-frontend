@@ -11,14 +11,11 @@ import React from "react";
 function Search() {
   return (
     <IonPage>
-      <IonHeader className="ion-no-border">
-        <IonToolbar>
-          <IonTitle size="large" style={{fontWeight:'bold'}}>Toolbar</IonTitle>
-        </IonToolbar>
-        <IonToolbar>
+      <IonContent className="ion-padding">
+        <h1 className="ion-text-bold">Search</h1>
           <IonSearchbar mode="ios" animated={true}></IonSearchbar>
-        </IonToolbar>
-      </IonHeader>
+      </IonContent>
+     
     </IonPage>
   );
 }

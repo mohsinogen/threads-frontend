@@ -20,19 +20,16 @@ function TextInput({
   disabled?:boolean
 }) {
   return (
-    <>
-      <IonItem>
         <IonInput
+        fill="outline"
           className="inputStyle"
           value={value}
           placeholder={placeholder}
           type={type}
-          onIonChange={(e) => {
+          onIonInput={(e) => {
             onChange(e);
           }}
         />
-      </IonItem>
-    </>
   );
 }
 

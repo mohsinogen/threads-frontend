@@ -19,7 +19,8 @@ import {
 import { close } from "ionicons/icons";
 import React, { useState } from "react";
 import { useHistory } from "react-router";
-import { updateUserProfile } from "../utils/api";
+import { updateUserProfile, uploadFile } from "../utils/api";
+import { FilePicker } from '@capawesome/capacitor-file-picker';
 
 function EditProfile() {
   const history = useHistory();
@@ -67,21 +68,41 @@ function EditProfile() {
       presentToast('Please write a short bio');
       return;
     } else{
-      updateUserProfile({...updatedInfo, token: userInfo.token}).then((res)=>{
-        localStorage.setItem("userInfo", JSON.stringify(res.data.data));
-        history.goBack();
-      }).catch((error)=>{
-        console.log(error);
-        
-      })
+      setTimeout(()=>{
+        updateUserProfile({...updatedInfo, token: userInfo.token}).then((res)=>{
+          localStorage.setItem("userInfo", JSON.stringify(res.data.data));
+          history.goBack();
+        }).catch((error)=>{
+          console.log(error);
+          
+        })
+      },2000)
     }
   }
 
-  const openFilePicker=()=>{
-   /*  FileOpener.open({}).then((res)=>{
-      console.log(res);
-    }) */
-  }
+  const pickImages = async () => {
+    try {
+      const result = await FilePicker.pickImages({
+        multiple: false,
+      });
+      console.log(result);
+      
+      const image = result.files[0]
+      
+      if(image!=undefined && image!=null){
+        const formData:any = new FormData();
+        formData.append('file', result.files[0]['blob']);
+
+        await uploadFile(formData, userInfo.token)
+      }
+    
+      
+    } catch (error) {
+      console.log(error);
+      
+    }
+    
+  };
 
   return (
     <IonPage>
@@ -111,14 +132,14 @@ function EditProfile() {
                     labelPlacement="stacked"
                     placeholder="Enter text"
                     value={updatedInfo.name}
-                    onIonChange={(e)=>{
+                    onIonInput={(e)=>{
                       setUpdatedInfo({...updatedInfo, name:e.detail.value})
                     }}
                   ></IonInput>
                 </IonItem>
               </IonCol>
               <IonCol size="3">
-                <IonAvatar>
+                <IonAvatar onClick={pickImages}>
                   <img alt="profile img" src={userInfo.profile} />
                 </IonAvatar>
               </IonCol>
@@ -132,7 +153,7 @@ function EditProfile() {
                     labelPlacement="stacked"
                     placeholder="Write a bio"
                     value={updatedInfo.bio}
-                    onIonChange={(e)=>{
+                    onIonInput={(e)=>{                      
                       setUpdatedInfo({...updatedInfo, bio:e.detail.value})
                     }}
                   ></IonInput>
@@ -148,7 +169,7 @@ function EditProfile() {
                     labelPlacement="stacked"
                     placeholder="+ Add link"
                     value={userInfo.link}
-                    onIonChange={(e)=>{                      
+                    onIonInput={(e)=>{                      
                       setUpdatedInfo({...updatedInfo, link:e.detail.value})
                     }}
                   ></IonInput>

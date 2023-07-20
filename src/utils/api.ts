@@ -30,4 +30,9 @@ const getThreadsByUser=async(token:string, page:number, user:string)=>{
     return response;
 }
 
-export {login,register,getThreads, getThreadsByUser, updateUserProfile};
+const uploadFile=async(data:any,token:string)=>{
+    const response = await Axios.post(URL+`api/upload`,data, {headers:{'Authorization':`Bearer ${token}`}});
+    return response;
+}
+
+export {login,register,getThreads, getThreadsByUser, updateUserProfile,uploadFile};

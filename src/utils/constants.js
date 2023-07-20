@@ -1,3 +1,3 @@
-const URL = 'http://localhost:5000/';
+const URL = 'https://threads-api-ssfl.onrender.com/';
 
 export {URL}
