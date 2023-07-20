@@ -11,8 +11,13 @@ const register=async(name:string, email:string, password: string)=>{
     return response;
 }
 
-const updateUserProfile=async(data:object)=>{
-    const response = await Axios.put(URL+`api/users/profile`, {...data});
+const updateUserProfile=async(data:any)=>{
+    const response = await Axios.put(URL+`api/users/profile`, {...data}, {headers:{'Authorization':`Bearer ${data.token}`}});
+    return response;
+}
+
+const createThread=async(data:any)=>{
+    const response = await Axios.post(URL+`api/threads`, {...data}, {headers:{'Authorization':`Bearer ${data.token}`}});
     return response;
 }
 

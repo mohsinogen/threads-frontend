@@ -83,7 +83,7 @@ import {
                 onChange={(e) => {
                     setPassword(e.detail.value)
                 }}
-                type="text"
+                type="password"
               />
                 <br />
                 <TextInput
@@ -92,7 +92,7 @@ import {
                 onChange={(e) => {
                   setConfirmPassword(e.detail.value)
                 }}
-                type="text"
+                type="password"
               />
                 <br />
                 <TextButton text="Register" clickHandler={registerHandler} />

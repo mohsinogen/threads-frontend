@@ -11,16 +11,18 @@ import {
   IonRow,
   IonSegment,
   IonSegmentButton,
+  IonText,
   IonTitle,
   IonToolbar,
   useIonActionSheet,
   useIonViewWillEnter,
 } from "@ionic/react";
-import { globeOutline, menu } from "ionicons/icons";
+import { globeOutline, linkOutline, menu } from "ionicons/icons";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import ThreadList from "../components/ThreadList/ThreadList";
 import { getThreadsByUser } from "../utils/api";
+import { Browser } from '@capacitor/browser';
 
 function Profile() {
   const history = useHistory();
@@ -41,6 +43,7 @@ function Profile() {
 
   const presentSheet = () => {
     present({
+      mode:'ios',
       buttons: [
         {
           text: "Logout",
@@ -92,6 +95,10 @@ function Profile() {
         console.log(error);
       });
   };
+
+  const openBioLink = async() =>{
+    await Browser.open({ url: userInfo.link });
+  }
 
   return (
     <IonPage>
@@ -145,7 +152,22 @@ function Profile() {
                 </IonCol>
               </IonRow>
             )}
-            <strong>{userInfo?.followers?.length} followers</strong>
+            {userInfo.link && (
+              <IonRow>
+                <IonCol>
+                  <IonText onClick={openBioLink} className="d-flex" style={{alignItems:'center',justifyContent:'flex-start'}} color={"secondary"}>
+                    <IonIcon color="secondary" icon={linkOutline} />
+                    {userInfo.link.length > 40 ? userInfo.link.slice(8,40)+"...":userInfo.link.slice(8)}
+                  </IonText>
+                </IonCol>
+              </IonRow>
+            )}
+            <IonRow>
+              <IonCol>
+                <strong>{userInfo?.followers?.length} followers</strong>
+              </IonCol>
+            </IonRow>
+
             <IonRow className="ion-no-padding ion-padding-top">
               <IonCol size="6">
                 <IonButton
@@ -153,8 +175,8 @@ function Profile() {
                   size="small"
                   expand="block"
                   fill="outline"
-                  onClick={()=>{
-                      history.push('/editprofile')
+                  onClick={() => {
+                    history.push("/editprofile");
                   }}
                 >
                   Edit profile

@@ -78,7 +78,7 @@ function Login() {
                 onChange={(e) => {
                   setPassword(e.detail.value)
                 }}
-                type="text"
+                type="password"
               />
               <br />
               <TextButton text="Login" clickHandler={loginHandler} />

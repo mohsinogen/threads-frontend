@@ -10,6 +10,7 @@ import {
 } from "@ionic/react";
 import { chatbubble, chatbubbleOutline, ellipsisHorizontal, heartOutline, shareOutline } from "ionicons/icons";
 import React from "react";
+import { timeSince } from "../../utils/helper";
 
 interface ThreadComponentProps {
   data: any;
@@ -23,11 +24,11 @@ function ThreadComponent(props: ThreadComponentProps) {
             <img alt="profile img" src={props.data.author.profile} />
           </IonAvatar>
         </IonCol>
-        <IonCol className="d-flex" style={{ alignItems: "center" }} size="8">
+        <IonCol className="d-flex" style={{ alignItems: "center" }} size="7">
           <IonLabel>{props.data.author.name}</IonLabel>
         </IonCol>
         <IonCol className="flex-centered">
-          <IonLabel>{"2w"}</IonLabel>
+          <IonLabel>{timeSince(props.data.createdAt)}</IonLabel>
         </IonCol>
         <IonCol className="flex-centered">
           <IonIcon color="primary" icon={ellipsisHorizontal}></IonIcon>

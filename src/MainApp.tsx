@@ -36,6 +36,9 @@ import { person, home, search, notifications, add } from "ionicons/icons";
 import Profile from "./pages/Profile";
 import Register from "./pages/Register";
 import EditProfile from "./pages/EditProfile";
+import CreateThread from "./pages/CreateThread";
+import Notifications from "./pages/Notifications";
+import Search from "./pages/Search";
 
 setupIonicReact();
 
@@ -43,7 +46,7 @@ const MainApp: React.FC = () => {
   const location = useLocation();
 
   // Define an array of routes where you want to hide the bottom tabs
-  const hiddenTabRoutes = ["/login","/register","/editprofile"];
+  const hiddenTabRoutes = ["/login","/register","/editprofile","/createthread"];
 
   // Check if the current route is in the hiddenTabRoutes array
   const isTabHidden = hiddenTabRoutes.includes(location.pathname);
@@ -70,6 +73,15 @@ const MainApp: React.FC = () => {
         <Route path="/editprofile" exact={true}>
           <EditProfile />
         </Route>
+        <Route path="/search" exact={true}>
+          <Search />
+        </Route>
+        <Route path="/createthread" exact={true}>
+          <CreateThread />
+        </Route>
+        <Route path="/notifications" exact={true}>
+          <Notifications />
+        </Route>
         <Route path="/thread/:id">
           <ViewMessage />
         </Route>
@@ -83,7 +95,7 @@ const MainApp: React.FC = () => {
           <IonIcon icon={search} />
         </IonTabButton>
 
-        <IonTabButton tab="addpost" href="/addpost">
+        <IonTabButton tab="createthread" href="/createthread">
           <IonIcon icon={add} />
         </IonTabButton>
 
