@@ -31,7 +31,7 @@ const getThreadsByUser=async(token:string, page:number, user:string)=>{
 }
 
 const uploadFile=async(data:any,token:string)=>{
-    const response = await Axios.post(URL+`api/upload`,data, {headers:{'Authorization':`Bearer ${token}`}});
+    const response = await Axios.post(URL+`api/upload`,data, {headers:{'Content-Type': 'multipart/form-data'}});
     return response;
 }
 
