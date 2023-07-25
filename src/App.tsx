@@ -34,15 +34,18 @@ import "./theme/variables.css";
 import Login from "./pages/Login";
 import { person, home, search, notifications, add } from "ionicons/icons";
 import MainApp from "./MainApp";
+import { AuthProvider } from "./context/AuthContext";
 
 setupIonicReact();
 
 const App: React.FC = () => {
   return (
     <IonApp>
+      <AuthProvider>
       <IonReactRouter>
         <MainApp />
       </IonReactRouter>
+      </AuthProvider>
     </IonApp>
   );
 };

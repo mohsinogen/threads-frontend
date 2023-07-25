@@ -45,4 +45,9 @@ const likeThread=async(id:string, token:string)=>{
     return response;
 }
 
-export {login,register,getThreads, getThreadsByUser, updateUserProfile,uploadFile, createThread, getThreadById, likeThread};
+const getUserByEmail=async(email: string, token: string)=>{
+    const response = await Axios.get(URL+`api/users/${email}`, {headers:{'Authorization':`Bearer ${token}`}});
+    return response;
+}
+
+export {login,register,getThreads, getUserByEmail,getThreadsByUser, updateUserProfile,uploadFile, createThread, getThreadById, likeThread};

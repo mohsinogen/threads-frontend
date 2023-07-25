@@ -1,23 +1,22 @@
 import { IonBackButton, IonButtons, IonContent, IonPage, IonTitle, IonToolbar, useIonViewWillEnter } from '@ionic/react'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { getThreadById } from '../utils/api';
 import ThreadComponent from '../components/ThreadComponent/ThreadComponent';
+import AuthContext from '../context/AuthContext';
 
 function ThreadPage() {
-  const [userInfo, setUserInfo] = useState<any>({});
   const [data, setData] = useState<any>();
+
+  const { user } = useContext(AuthContext)
 
   const params = useParams<{id:string}>();
 
   useIonViewWillEnter(()=>{
     console.log(params);
     
-    const data = localStorage.getItem("userInfo");
-    if (data) {
-      const parsedData = JSON.parse(data);
-      setUserInfo(parsedData);
-      getThreadById(params.id,parsedData.token).then((res)=>{
+    if (user) {
+      getThreadById(params.id,user.token).then((res)=>{
         setData(res.data);
       }).catch((err)=>{
         console.log(err);
@@ -35,7 +34,7 @@ function ThreadPage() {
         <IonTitle>Thread</IonTitle>
       </IonToolbar>
         <IonContent>
-        {data && <ThreadComponent userInfo={userInfo} data={data} />}
+        {data && <ThreadComponent shouldOpen={false} userInfo={user} data={data} />}
         </IonContent>
     </IonPage>
   )

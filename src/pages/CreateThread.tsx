@@ -17,27 +17,21 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import { close } from "ionicons/icons";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useHistory } from "react-router";
 import { createThread } from "../utils/api";
+import AuthContext from "../context/AuthContext";
 
 function CreateThread() {
+
+  const {user} = useContext(AuthContext);
+
   const history = useHistory();
-  const [userInfo, setUserInfo] = useState<any>({});
+
   const [threads, setThreads] = useState<{content:string,parentThread:string | null}>({content:'', parentThread: null});
 
-  useIonViewWillEnter(async () => {
-    console.log("virew will enter");
-
-    const data = localStorage.getItem("userInfo");
-    if (data) {
-      const parsedData = JSON.parse(data);
-      setUserInfo(parsedData);
-    }
-  });
-
   const createThreadHandler=()=>{
-    createThread({...threads, token: userInfo.token}).then((res)=>{
+    createThread({...threads, token: user?.token}).then((res)=>{
       history.goBack();
     }).catch((err)=>{
       console.log('Failed to create thread', err);
@@ -71,7 +65,7 @@ function CreateThread() {
               }}
             >
               <IonAvatar style={{ width: "2.5rem", height: "2.5rem" }}>
-                <img alt="profile img" src={userInfo.profile} />
+                <img alt="profile img" src={user?.profile} />
               </IonAvatar>
               <br />
               <div
@@ -84,7 +78,7 @@ function CreateThread() {
             </IonCol>
             <IonCol>
               <IonRow>
-                <IonLabel>{userInfo.email?.split('@')[0]}</IonLabel>
+                <IonLabel>{user?.email?.split('@')[0]}</IonLabel>
               </IonRow>
               <IonRow className="ion-no-padding">
                 <IonTextarea

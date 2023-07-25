@@ -18,32 +18,52 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import { globeOutline, linkOutline, menu } from "ionicons/icons";
-import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router";
+import React, { useContext, useEffect, useState } from "react";
+import { useHistory, useParams } from "react-router";
 import ThreadList from "../components/ThreadList/ThreadList";
-import { getThreadsByUser } from "../utils/api";
-import { Browser } from '@capacitor/browser';
+import { getThreadsByUser, getUserByEmail } from "../utils/api";
+import { Browser } from "@capacitor/browser";
+import AuthContext from "../context/AuthContext";
+import User from "../models/user.model";
 
 function Profile() {
   const history = useHistory();
-  const [userInfo, setUserInfo] = useState<any>({});
-  const [currTab, setCurrTab] = useState<string>("threads");
-  useIonViewWillEnter(async () => {
-    console.log("virew will enter");
+  const { userEmail } = useParams<{ userEmail: string }>();
 
-    const data = localStorage.getItem("userInfo");
-    if (data) {
-      const parsedData = JSON.parse(data);
-      setUserInfo(parsedData);
-      getThreadListByUser(parsedData.token, 1, parsedData._id);
+  const [userProfileData, setUserProfileData] = useState<User | null>(null);
+  const [currTab, setCurrTab] = useState<string>("threads");
+
+  const { user, logout } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (user && userEmail) {
+      getProfileData(userEmail, user.token);
+    } else {
+      history.goBack();
     }
-  });
+  }, [user]);
+
+  const getProfileData = async (email: string, token: string) => {
+    try {
+      const response = await getUserByEmail(email, token);
+
+      console.log(response.data[0]);
+
+      setUserProfileData(response.data[0]);
+
+      if (user) {
+        getThreadListByUser(user.token, page, response.data[0]?._id);
+      }
+    } catch (error) {
+      /*  */
+    }
+  };
 
   const [present] = useIonActionSheet();
 
   const presentSheet = () => {
     present({
-      mode:'ios',
+      mode: "ios",
       buttons: [
         {
           text: "Logout",
@@ -52,7 +72,7 @@ function Profile() {
             action: "cancel",
           },
           handler: () => {
-            localStorage.removeItem("userInfo");
+            logout();
             history.push("/login");
           },
         },
@@ -96,9 +116,11 @@ function Profile() {
       });
   };
 
-  const openBioLink = async() =>{
-    await Browser.open({ url: userInfo.link });
-  }
+  const openBioLink = async () => {
+    if (userProfileData) {
+      await Browser.open({ url: userProfileData.link });
+    }
+  };
 
   return (
     <IonPage>
@@ -107,13 +129,13 @@ function Profile() {
           <IonIcon slot="icon-only" icon={globeOutline}></IonIcon>
         </IonButtons>
 
-        <IonButtons slot="end">
+        {userProfileData?._id == user?._id && (<IonButtons slot="end">
           <IonIcon
             onClick={presentSheet}
             slot="icon-only"
             icon={menu}
           ></IonIcon>
-        </IonButtons>
+        </IonButtons>)}
       </IonToolbar>
       <IonContent>
         <IonCol>
@@ -121,7 +143,7 @@ function Profile() {
             <IonRow>
               <IonCol size="9">
                 <IonRow>
-                  <h1>{userInfo.name}</h1>
+                  <h1>{userProfileData?.name}</h1>
                 </IonRow>
                 <IonRow>
                   <IonCol
@@ -132,7 +154,7 @@ function Profile() {
                       justifyContent: "space-between",
                     }}
                   >
-                    {userInfo?.email?.split("@")[0]}
+                    {userProfileData?.email?.split("@")[0]}
                     <IonBadge mode="ios" color="medium">
                       threads.net
                     </IonBadge>
@@ -141,30 +163,40 @@ function Profile() {
               </IonCol>
               <IonCol size="3">
                 <IonAvatar>
-                  <img alt="profile img" src={userInfo.profile} />
+                  <img alt="profile img" src={userProfileData?.profile} />
                 </IonAvatar>
               </IonCol>
             </IonRow>
-            {userInfo.bio && (
+            {userProfileData?.bio && (
               <IonRow>
                 <IonCol size="6">
-                  <p>{userInfo.bio}</p>
+                  <p>{userProfileData?.bio}</p>
                 </IonCol>
               </IonRow>
             )}
-            {userInfo.link && (
+            {userProfileData?.link && (
               <IonRow>
                 <IonCol>
-                  <IonText onClick={openBioLink} className="d-flex" style={{alignItems:'center',justifyContent:'flex-start'}} color={"secondary"}>
+                  <IonText
+                    onClick={openBioLink}
+                    className="d-flex"
+                    style={{
+                      alignItems: "center",
+                      justifyContent: "flex-start",
+                    }}
+                    color={"secondary"}
+                  >
                     <IonIcon color="secondary" icon={linkOutline} />
-                    {userInfo.link.length > 40 ? userInfo.link.slice(8,40)+"...":userInfo.link.slice(8)}
+                    {userProfileData.link.length > 40
+                      ? userProfileData.link.slice(8, 40) + "..."
+                      : userProfileData.link.slice(8)}
                   </IonText>
                 </IonCol>
               </IonRow>
             )}
             <IonRow>
               <IonCol>
-                <strong>{userInfo?.followers?.length} followers</strong>
+                <strong>{userProfileData?.followers?.length} followers</strong>
               </IonCol>
             </IonRow>
 
@@ -208,17 +240,19 @@ function Profile() {
               <IonLabel>Replies</IonLabel>
             </IonSegmentButton>
           </IonSegment>
-          {currTab == "threads" && (
+          {/* {currTab == "threads" && (
             <ThreadList
-            userInfo={userInfo}
+              userInfo={userProfileData}
               onScroll={() => {
-                setPage(page + 1);
-                getThreadListByUser(userInfo.token, page + 1, userInfo._id);
+                if (userProfileData && user) {
+                  setPage(page + 1);
+                  getThreadListByUser(user.token, page + 1, userProfileData._id);
+                }
               }}
               shouldScroll={page < totalPages}
               threads={threads}
             />
-          )}
+          )} */}
         </IonCol>
       </IonContent>
     </IonPage>

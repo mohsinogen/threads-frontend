@@ -17,15 +17,17 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import { close } from "ionicons/icons";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useHistory } from "react-router";
 import { updateUserProfile, uploadFile } from "../utils/api";
 import { URL } from "../utils/constants";
+import AuthContext from "../context/AuthContext";
 
 function EditProfile() {
   const history = useHistory();
 
-  const [userInfo, setUserInfo] = useState<any>({});
+  const {user} = useContext(AuthContext);
+
   const [updatedInfo, setUpdatedInfo] = useState<{
     name: string | null | undefined;
     email: string;
@@ -48,16 +50,13 @@ function EditProfile() {
   useIonViewWillEnter(async () => {
     console.log("virew will enter");
 
-    const data = localStorage.getItem("userInfo");
-    if (data) {
-      const parsedData = JSON.parse(data);
-      setUserInfo(parsedData);
+    if (user) {
       setUpdatedInfo({
-        bio: parsedData.bio,
-        email: parsedData.email,
-        link: parsedData.link,
-        name: parsedData.name,
-        profile: parsedData.profile,
+        bio: user.bio,
+        email: user.email,
+        link: user.link,
+        name: user.name,
+        profile: user.profile,
       });
     }
   });
@@ -78,7 +77,7 @@ function EditProfile() {
       return;
     } else {
       setTimeout(() => {
-        updateUserProfile({ ...updatedInfo, token: userInfo.token })
+        updateUserProfile({ ...updatedInfo, token: user?.token })
           .then((res) => {
             localStorage.setItem("userInfo", JSON.stringify(res.data.data));
             history.goBack();
@@ -97,13 +96,15 @@ function EditProfile() {
   const imageHandler=async(e:any)=>{
     try {
      
-      const file = e.target.files[0]
+      if(user){
+        const file = e.target.files[0]
       const formData = new FormData()
       formData.append('image', file)
 
-      uploadFile(formData, userInfo.token).then((res)=>{
+      uploadFile(formData, user.token).then((res)=>{
         setUpdatedInfo({...updatedInfo,profile:URL+res.data?.slice(1)})
       });
+      }
       
     } catch (error) {
       console.log(error);
@@ -177,7 +178,7 @@ function EditProfile() {
                     label="Link"
                     labelPlacement="stacked"
                     placeholder="+ Add link"
-                    value={userInfo.link}
+                    value={user?.link}
                     onIonInput={(e) => {
                       setUpdatedInfo({ ...updatedInfo, link: e.detail.value });
                     }}

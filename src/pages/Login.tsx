@@ -7,17 +7,19 @@ import {
   IonText,
   useIonToast,
 } from "@ionic/react";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import TextButton from "../components/TextButton/TextButton";
 import TextInput from "../components/TextInput/TextInput";
-import { login } from "../utils/api";
 import { useHistory } from "react-router";
+import AuthContext from "../context/AuthContext";
 
 function Login() {
 
   const [email, setEmail] = useState<string | undefined | null>("");
   const [password, setPassword] = useState<string | undefined | null>("");
   const [loading, setLoading] = useState<boolean>(false);
+
+  const {login, user} = useContext(AuthContext);
  
   const history = useHistory();
 
@@ -36,8 +38,6 @@ function Login() {
    if(email && password){
     login(email, password)
     .then((res) => {
-      console.log(res.data.data);
-      localStorage.setItem("userInfo", JSON.stringify(res.data.data));
       history.push("/home");
     })
     .catch((error) => {
@@ -48,8 +48,7 @@ function Login() {
   };
 
   useEffect(() => {
-    const userInfo = localStorage.getItem("userInfo");
-    if (userInfo) {
+    if (user) {
       history.push("/home");
     }
   }, []);
