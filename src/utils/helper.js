@@ -1,37 +1,54 @@
 import axios from 'axios';
 
 const Axios = axios.create({
-    baseURL: 'https://mohsinogen-musical-broccoli-j954rq99445257v6-5000.preview.app.github.dev'
+  baseURL: 'https://mohsinogen-musical-broccoli-j954rq99445257v6-5000.preview.app.github.dev'
 })
 
 export function timeSince(dt) {
 
-    const date = new Date(dt);
+  const currentDate = new Date();
+  const givenDate = new Date(dt);
+  const timeDifference = currentDate - givenDate;
+  const seconds = Math.floor(timeDifference / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  const weeks = Math.floor(days / 7);
+  const years = Math.floor(weeks / 52);
 
-    var seconds = Math.floor((new Date() - date) / 1000);
-  
-    var interval = seconds / 31536000;
-  
-    if (interval > 1) {
-      return Math.floor(interval) + " y";
+  if (seconds < 60) {
+    return 'just now';
+  } else if (minutes < 60) {
+    if (minutes === 1) {
+      return '1 m';
+    } else {
+      return `${minutes} m`;
     }
-    interval = seconds / 2592000;
-    if (interval > 1) {
-      return Math.floor(interval) + " mon";
+  } else if (hours < 24) {
+    if (hours === 1) {
+      return '1 h';
+    } else {
+      return `${hours} h`;
     }
-    interval = seconds / 86400;
-    if (interval > 1) {
-      return Math.floor(interval) + " d";
+  } else if (days < 7) {
+    if (days === 1) {
+      return '1 d';
+    } else {
+      return `${days} d`;
     }
-    interval = seconds / 3600;
-    if (interval > 1) {
-      return Math.floor(interval) + " h";
+  } else if (weeks < 52) {
+    if (weeks === 1) {
+      return '1 w';
+    } else {
+      return `${weeks} w`;
     }
-    interval = seconds / 60;
-    if (interval > 1) {
-      return Math.floor(interval) + " minutes";
+  } else {
+    if (years === 1) {
+      return '1 y';
+    } else {
+      return `${years} y`;
     }
-    return Math.floor(seconds) + " s";
   }
+}
 
 export default Axios;

@@ -35,4 +35,9 @@ const uploadFile=async(data:any,token:string)=>{
     return response;
 }
 
-export {login,register,getThreads, getThreadsByUser, updateUserProfile,uploadFile};
+const getThreadById=async(id:string, token:string)=>{
+    const response = await Axios.get(URL+`api/threads/${id}`, {headers:{'Authorization':`Bearer ${token}`}});
+    return response;
+}
+
+export {login,register,getThreads, getThreadsByUser, updateUserProfile,uploadFile, createThread, getThreadById};

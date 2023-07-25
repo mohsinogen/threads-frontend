@@ -19,11 +19,12 @@ import {
 import { close } from "ionicons/icons";
 import React, { useState } from "react";
 import { useHistory } from "react-router";
+import { createThread } from "../utils/api";
 
 function CreateThread() {
   const history = useHistory();
   const [userInfo, setUserInfo] = useState<any>({});
-  const [threads, setThreads] = useState<[{content:string,parentThread:string | null}]>([{content:'', parentThread: null}]);
+  const [threads, setThreads] = useState<{content:string,parentThread:string | null}>({content:'', parentThread: null});
 
   useIonViewWillEnter(async () => {
     console.log("virew will enter");
@@ -35,6 +36,14 @@ function CreateThread() {
     }
   });
 
+  const createThreadHandler=()=>{
+    createThread({...threads, token: userInfo.token}).then((res)=>{
+      history.goBack();
+    }).catch((err)=>{
+      console.log('Failed to create thread', err);
+      
+    })
+  }
 
   return (
     <IonPage>
@@ -85,9 +94,11 @@ function CreateThread() {
                   placeholder="Start a thread..."
                   autofocus={true}
                   mode="ios"
-                  value={threads[0].content}
+                  value={threads.content}
                   onIonInput={(e)=>{
-                    setThreads([...threads,])
+                    if(e.target.value){
+                      setThreads({...threads,content:e.target.value})
+                    }
                   }}
                 ></IonTextarea>
               </IonRow>
@@ -98,7 +109,7 @@ function CreateThread() {
       <IonFooter>
         <IonToolbar color={"light"}>
           <IonButtons slot="end">
-            <IonButton color={"secondary"}>Post</IonButton>
+            <IonButton onClick={createThreadHandler} disabled={threads.content==''} color={"secondary"}>Post</IonButton>
           </IonButtons>
         </IonToolbar>
       </IonFooter>

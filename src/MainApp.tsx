@@ -39,6 +39,7 @@ import EditProfile from "./pages/EditProfile";
 import CreateThread from "./pages/CreateThread";
 import Notifications from "./pages/Notifications";
 import Search from "./pages/Search";
+import ThreadPage from "./pages/ThreadPage";
 
 setupIonicReact();
 
@@ -46,7 +47,7 @@ const MainApp: React.FC = () => {
   const location = useLocation();
 
   // Define an array of routes where you want to hide the bottom tabs
-  const hiddenTabRoutes = ["/login","/register","/editprofile","/createthread"];
+  const hiddenTabRoutes = ["/login","/register","/editprofile","/createthread","/thread"];
 
   // Check if the current route is in the hiddenTabRoutes array
   const isTabHidden = hiddenTabRoutes.includes(location.pathname);
@@ -83,7 +84,7 @@ const MainApp: React.FC = () => {
           <Notifications />
         </Route>
         <Route path="/thread/:id">
-          <ViewMessage />
+          <ThreadPage />
         </Route>
       </IonRouterOutlet>
       <IonTabBar slot="bottom"  style={!isTabHidden ? {} : {display: 'none'}}>

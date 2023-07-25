@@ -11,13 +11,18 @@ import {
 import { chatbubble, chatbubbleOutline, ellipsisHorizontal, heartOutline, shareOutline } from "ionicons/icons";
 import React from "react";
 import { timeSince } from "../../utils/helper";
+import { useHistory } from "react-router";
 
 interface ThreadComponentProps {
   data: any;
 }
 function ThreadComponent(props: ThreadComponentProps) {
+    const history = useHistory();
+
   return (
-    <IonGrid style={{borderBottom:'1px solid lightgrey'}}>
+    <IonGrid onClick={()=>{
+        history.push(`/thread/${props.data._id}`)
+    }} style={{borderBottom:'1px solid lightgrey'}}>
       <IonRow>
         <IonCol className="flex-centered">
           <IonAvatar style={{ width: "2rem", height: "2rem" }}>
@@ -39,13 +44,13 @@ function ThreadComponent(props: ThreadComponentProps) {
       </IonRow>
       <IonRow className="ion-padding-top">
         <IonCol size='2'>
-          <IonIcon size="large" color="primary" icon={heartOutline}></IonIcon>
+          <IonIcon color="primary" icon={heartOutline}></IonIcon>
         </IonCol>
         <IonCol size='2'>
-          <IonIcon size="large" color="primary" icon={chatbubbleOutline}></IonIcon>
+          <IonIcon color="primary" icon={chatbubbleOutline}></IonIcon>
         </IonCol>
         <IonCol size='2'>
-          <IonIcon size="large" color="primary" icon={shareOutline}></IonIcon>
+          <IonIcon color="primary" icon={shareOutline}></IonIcon>
         </IonCol>
       </IonRow>
     </IonGrid>
