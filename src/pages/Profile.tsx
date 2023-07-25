@@ -134,7 +134,7 @@ function Profile() {
                   >
                     {userInfo?.email?.split("@")[0]}
                     <IonBadge mode="ios" color="medium">
-                      test.net
+                      threads.net
                     </IonBadge>
                   </IonCol>
                 </IonRow>
@@ -210,6 +210,7 @@ function Profile() {
           </IonSegment>
           {currTab == "threads" && (
             <ThreadList
+            userInfo={userInfo}
               onScroll={() => {
                 setPage(page + 1);
                 getThreadListByUser(userInfo.token, page + 1, userInfo._id);

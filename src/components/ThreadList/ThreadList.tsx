@@ -17,10 +17,12 @@ function ThreadList({
   threads,
   onScroll,
   shouldScroll,
+  userInfo
 }: {
   threads: any[];
   onScroll: () => void;
   shouldScroll: boolean;
+  userInfo: any
 }) {
   if (threads.length < 1) {
     return (
@@ -37,7 +39,7 @@ function ThreadList({
     <>
       <IonList>
         {threads.map((item, index) => (
-          <ThreadComponent key={index} data={item} />
+          <ThreadComponent userInfo={userInfo} key={index} data={item} />
         ))}
       </IonList>
       {shouldScroll && (

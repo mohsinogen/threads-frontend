@@ -84,7 +84,7 @@ const Home: React.FC = () => {
           </IonToolbar>
         </IonHeader>
 
-        <ThreadList shouldScroll={page < totalPages} threads={threads} onScroll={()=>{
+        <ThreadList userInfo={userInfo} shouldScroll={page < totalPages} threads={threads} onScroll={()=>{
           setPage(page+1);
           getThreadList(userInfo.token,page+1);
         }} />

@@ -7,17 +7,43 @@ import {
   IonItem,
   IonLabel,
   IonRow,
+  useIonViewDidEnter,
+  useIonViewWillEnter,
 } from "@ionic/react";
-import { chatbubble, chatbubbleOutline, ellipsisHorizontal, heartOutline, shareOutline } from "ionicons/icons";
-import React from "react";
+import { chatbubble, chatbubbleOutline, ellipsisHorizontal, heart, heartOutline, shareOutline } from "ionicons/icons";
+import React, { useState } from "react";
 import { timeSince } from "../../utils/helper";
 import { useHistory } from "react-router";
+import { likeThread } from "../../utils/api";
 
 interface ThreadComponentProps {
   data: any;
+  userInfo: any;
 }
 function ThreadComponent(props: ThreadComponentProps) {
     const history = useHistory();
+    const [isLiked, setIsLiked] = useState<boolean>(false);
+
+    const likeThreadHandler=()=>{
+      if(!props.data.likes.includes(props.userInfo._id)){
+        likeThread(props.data._id,props.userInfo.token).then((res)=>{
+          if(res.data.data=='liked'){
+            setIsLiked(true);
+          } else{
+            setIsLiked(false);
+          }
+        }).catch((err)=>{
+          console.log(err);
+          
+        })
+      }
+    }
+
+    useIonViewDidEnter(()=>{
+      if(props.data.likes.includes(props.userInfo._id)){
+        setIsLiked(true);
+      }
+    })
 
   return (
     <IonGrid onClick={()=>{
@@ -44,7 +70,10 @@ function ThreadComponent(props: ThreadComponentProps) {
       </IonRow>
       <IonRow className="ion-padding-top">
         <IonCol size='2'>
-          <IonIcon color="primary" icon={heartOutline}></IonIcon>
+          <IonIcon color={!isLiked ? "primary": "danger"} icon={!isLiked ? heartOutline : heart} onClick={(e)=>{
+            e.stopPropagation();
+            likeThreadHandler()
+          }}></IonIcon>
         </IonCol>
         <IonCol size='2'>
           <IonIcon color="primary" icon={chatbubbleOutline}></IonIcon>

@@ -40,4 +40,9 @@ const getThreadById=async(id:string, token:string)=>{
     return response;
 }
 
-export {login,register,getThreads, getThreadsByUser, updateUserProfile,uploadFile, createThread, getThreadById};
+const likeThread=async(id:string, token:string)=>{
+    const response = await Axios.put(URL+`api/threads/like/${id}`,{}, {headers:{'Authorization':`Bearer ${token}`}});
+    return response;
+}
+
+export {login,register,getThreads, getThreadsByUser, updateUserProfile,uploadFile, createThread, getThreadById, likeThread};
