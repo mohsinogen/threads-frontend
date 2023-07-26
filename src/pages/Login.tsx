@@ -10,48 +10,49 @@ import {
 import React, { useContext, useEffect, useState } from "react";
 import TextButton from "../components/TextButton/TextButton";
 import TextInput from "../components/TextInput/TextInput";
-import { useHistory } from "react-router";
+import { Redirect, Route, useHistory } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 
 function Login() {
-
   const [email, setEmail] = useState<string | undefined | null>("");
   const [password, setPassword] = useState<string | undefined | null>("");
   const [loading, setLoading] = useState<boolean>(false);
 
-  const {login, user} = useContext(AuthContext);
- 
+  const { login, user } = useContext(AuthContext);
+
   const history = useHistory();
 
   const [present] = useIonToast();
 
-  const presentToast = (message:string) => {
+  const presentToast = (message: string) => {
     present({
       message: message,
       duration: 500,
-      position: 'bottom',
-      mode:'ios'
+      position: "bottom",
+      mode: "ios",
     });
   };
 
   const loginHandler = () => {
-   if(email && password){
-    login(email, password)
-    .then((res) => {
-      history.push("/home");
-    })
-    .catch((error) => {
-      console.log(error);
-      presentToast(error.response.data.message?error.response.data.message:error.message)
-    });
-   }
+    if (email && password) {
+      login(email, password)
+        .then((res) => {
+          history.push("/home");
+        })
+        .catch((error) => {
+          console.log(error);
+          presentToast(
+            error.response.data.message
+              ? error.response.data.message
+              : error.message
+          );
+        });
+    }
   };
 
-  useEffect(() => {
-    if (user) {
-      history.push("/home");
-    }
-  }, []);
+  if (user) {
+   return <Redirect to={"/home"} />;
+  }
 
   return (
     <IonPage>
@@ -64,18 +65,18 @@ function Login() {
             <IonCol size="12" sizeMd="6" sizeLg="4">
               <TextInput
                 placeholder="Email"
-                value={email? email:''}
+                value={email ? email : ""}
                 onChange={(e) => {
-                  setEmail(e.detail.value)
+                  setEmail(e.detail.value);
                 }}
                 type="text"
               />
               <br />
               <TextInput
                 placeholder="Password"
-                value={password? password:''}
+                value={password ? password : ""}
                 onChange={(e) => {
-                  setPassword(e.detail.value)
+                  setPassword(e.detail.value);
                 }}
                 type="password"
               />

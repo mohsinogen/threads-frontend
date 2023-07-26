@@ -33,11 +33,8 @@ const Home: React.FC = () => {
   const [totalPages, setTotalPages] = useState<number>(1)
   const [page, setPage] = useState<number>(1)
 
- useEffect(()=>{
-  console.log('Home',user);
-  
+ useEffect(()=>{  
       if (user) {
-
           getThreadList(user.token, 1)
       }
   
@@ -45,7 +42,6 @@ const Home: React.FC = () => {
 
   const getThreadList=(token:string,page:number,callback=()=>{/*  */})=>{
     getThreads(token,page).then((res) => {
-      console.log(res.data.data.data);
       setTotalPages(res.data.data.totalPages)
       if(page==1){
         setThreads(res.data.data.data);
@@ -82,7 +78,7 @@ const Home: React.FC = () => {
           </IonToolbar>
         </IonHeader>
 
-        <ThreadList userInfo={user} shouldScroll={page < totalPages} threads={threads} onScroll={()=>{
+        <ThreadList shouldScroll={page < totalPages} threads={threads} onScroll={()=>{
           if(user){
             setPage(page+1);
           getThreadList(user?.token,page+1);

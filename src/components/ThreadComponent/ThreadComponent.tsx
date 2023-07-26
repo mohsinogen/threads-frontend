@@ -25,12 +25,12 @@ import { likeThread } from "../../utils/api";
 
 interface ThreadComponentProps {
   data: any;
-  userInfo: any;
+  loggedInUser: any;
   shouldOpen?: boolean;
 }
 function ThreadComponent({
   data,
-  userInfo,
+  loggedInUser,
   shouldOpen = true,
 }: ThreadComponentProps) {
   const history = useHistory();
@@ -38,7 +38,7 @@ function ThreadComponent({
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
   const likeThreadHandler = () => {
-    likeThread(data._id, userInfo.token)
+    likeThread(data._id, loggedInUser.token)
       .then((res) => {
         if (res.data.data == "liked") {
           setIsLiked(true);
@@ -52,15 +52,15 @@ function ThreadComponent({
   };
 
   useEffect(() => {
-    console.log("hi", data.likes, userInfo._id);
-    if (data.likes.includes(userInfo._id)) {
+    if (data.likes.includes(loggedInUser._id)) {
       setIsLiked(true);
     }
   }, []);
 
   return (
     <IonGrid
-      onClick={() => {
+      onClick={(e) => {
+        e.stopPropagation();
         if (shouldOpen) {
           history.push(`/thread/${data._id}`);
         }
@@ -71,24 +71,27 @@ function ThreadComponent({
         <IonCol className="flex-centered">
           <IonAvatar
             onClick={(e) => {
-              e.stopPropagation();
-              history.push(`/userprofile/${data.author.email}`);
+              if (!shouldOpen) {
+                e.stopPropagation();
+                history.push(`/userprofile/${data.author.email}`);
+              }
             }}
             style={{ width: "2rem", height: "2rem" }}
           >
             <img alt="profile img" src={data.author.profile} />
           </IonAvatar>
         </IonCol>
-        <IonCol
-          onClick={(e) => {
-            e.stopPropagation();
-            history.push(`/userprofile/${data.author.email}`);
-          }}
-          className="d-flex"
-          style={{ alignItems: "center" }}
-          size="7"
-        >
-          <IonLabel>{data.author.name}</IonLabel>
+        <IonCol className="d-flex" style={{ alignItems: "center" }} size="7">
+          <IonLabel
+            onClick={(e) => {
+              if (!shouldOpen) {
+                e.stopPropagation();
+                history.push(`/userprofile/${data.author.email}`);
+              }
+            }}
+          >
+            {data.author.name}
+          </IonLabel>
         </IonCol>
         <IonCol className="flex-centered">
           <IonLabel>{timeSince(data.createdAt)}</IonLabel>

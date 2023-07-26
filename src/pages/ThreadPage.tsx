@@ -34,7 +34,7 @@ function ThreadPage() {
         <IonTitle>Thread</IonTitle>
       </IonToolbar>
         <IonContent>
-        {data && <ThreadComponent shouldOpen={false} userInfo={user} data={data} />}
+        {data && <ThreadComponent shouldOpen={false} loggedInUser={user} data={data} />}
         </IonContent>
     </IonPage>
   )

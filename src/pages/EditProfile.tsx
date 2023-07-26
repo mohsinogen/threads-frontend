@@ -48,8 +48,6 @@ function EditProfile() {
   };
 
   useIonViewWillEnter(async () => {
-    console.log("virew will enter");
-
     if (user) {
       setUpdatedInfo({
         bio: user.bio,

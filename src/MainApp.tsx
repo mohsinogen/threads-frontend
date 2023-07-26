@@ -41,7 +41,8 @@ import Notifications from "./pages/Notifications";
 import Search from "./pages/Search";
 import ThreadPage from "./pages/ThreadPage";
 import AuthContext from "./context/AuthContext";
-import UserProfile from "./pages/Register";
+import UserProfile from "./pages/UserProfile";
+import ProtectedRoute from "./ProtectedRoute";
 
 setupIonicReact();
 
@@ -61,51 +62,31 @@ const MainApp: React.FC = () => {
 
   // Check if the current route is in the hiddenTabRoutes array
   const isTabHidden = hiddenTabRoutes.includes(location.pathname);
-  console.log(location.pathname, isTabHidden);
 
   return (
     <IonTabs>
       <IonRouterOutlet>
         <Route path="/" exact={true}>
-          <Redirect to={user === null ? "/login" : `/profile/${user.email}`} />
+          <Redirect to="/home" />
         </Route>
-        {user === null ? (
-          <>
-            <Route path="/login" exact={true}>
-              <Login />
-            </Route>
-            <Route path="/register" exact={true}>
-              <Register />
-            </Route>
-          </>
-        ) : (
-          <>
-            <Route path="/home" exact={true}>
-              <Home />
-            </Route>
-            <Route path="/profile/:userEmail" exact={true}>
-              <Profile />
-            </Route>
-            <Route path="/userprofile/:userEmail" exact={true}>
-              <UserProfile />
-            </Route>
-            <Route path="/editprofile" exact={true}>
-              <EditProfile />
-            </Route>
-            <Route path="/search" exact={true}>
-              <Search />
-            </Route>
-            <Route path="/createthread" exact={true}>
-              <CreateThread />
-            </Route>
-            <Route path="/notifications" exact={true}>
-              <Notifications />
-            </Route>
-            <Route path="/thread/:id">
-              <ThreadPage />
-            </Route>
-          </>
-        )}
+        <Route path="/login" exact={true}>
+          <Login />
+        </Route>
+        <Route path="/register" exact={true}>
+          <Register />
+        </Route>
+        <ProtectedRoute path="/home" component={Home} exact />
+        <ProtectedRoute path="/profile/:userEmail" component={Profile} exact />
+        <ProtectedRoute
+          path="/userprofile/:userEmail"
+          component={UserProfile}
+        exact
+        />
+        <ProtectedRoute path="/editprofile" component={EditProfile} exact />
+        <ProtectedRoute path="/search" component={Search} exact />
+        <ProtectedRoute path="/createthread" component={CreateThread} exact />
+        <ProtectedRoute path="/notifications" component={Notifications} exact />
+        <ProtectedRoute path="/thread/:id" component={ThreadPage} exact />
       </IonRouterOutlet>
       <IonTabBar slot="bottom" style={!isTabHidden ? {} : { display: "none" }}>
         <IonTabButton tab="home" href="/home">
@@ -124,11 +105,10 @@ const MainApp: React.FC = () => {
           <IonIcon icon={notifications} />
         </IonTabButton>
 
-        {user !== null && (
-          <IonTabButton tab="profile" href={`/profile/${user.email}`}>
+          <IonTabButton tab="profile" href={`/profile/${user?.email}`}>
             <IonIcon icon={person} />
           </IonTabButton>
-        )}
+        
       </IonTabBar>
     </IonTabs>
   );
