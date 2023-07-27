@@ -45,9 +45,19 @@ const likeThread=async(id:string, token:string)=>{
     return response;
 }
 
+const followUnfollowUser=async(id:string, token:string)=>{
+    const response = await Axios.put(URL+`api/users/follow/${id}`,{}, {headers:{'Authorization':`Bearer ${token}`}});
+    return response;
+}
+
 const getUserByEmail=async(email: string, token: string)=>{
     const response = await Axios.get(URL+`api/users/${email}`, {headers:{'Authorization':`Bearer ${token}`}});
     return response;
 }
 
-export {login,register,getThreads, getUserByEmail,getThreadsByUser, updateUserProfile,uploadFile, createThread, getThreadById, likeThread};
+const searchUsers=async(token:string, page:number, search:string)=>{
+    const response = await Axios.get(URL+`api/users?page=${page}&search=${search}`, {headers:{'Authorization':`Bearer ${token}`}});
+    return response;
+}
+
+export {login,register,getThreads,searchUsers,followUnfollowUser, getUserByEmail,getThreadsByUser, updateUserProfile,uploadFile, createThread, getThreadById, likeThread};

@@ -19,7 +19,7 @@ import {
 } from "@ionic/react";
 import { globeOutline, linkOutline, menu } from "ionicons/icons";
 import React, { useContext, useEffect, useState } from "react";
-import { useHistory, useParams } from "react-router";
+import { useHistory, useParams } from "react-router-dom";
 import ThreadList from "../components/ThreadList/ThreadList";
 import { getThreadsByUser, getUserByEmail } from "../utils/api";
 import { Browser } from "@capacitor/browser";

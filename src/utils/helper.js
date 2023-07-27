@@ -17,7 +17,7 @@ export function timeSince(dt) {
   const years = Math.floor(weeks / 52);
 
   if (seconds < 60) {
-    return 'just now';
+    return 'now';
   } else if (minutes < 60) {
     if (minutes === 1) {
       return '1 m';

@@ -16,28 +16,60 @@ import {
   IonToolbar,
   useIonViewWillEnter,
 } from "@ionic/react";
-import { close } from "ionicons/icons";
-import React, { useContext, useState } from "react";
-import { useHistory } from "react-router";
-import { createThread } from "../utils/api";
+import { attachOutline, close } from "ionicons/icons";
+import React, { useContext, useEffect, useState } from "react";
+import { useHistory, useLocation, useParams } from "react-router-dom";
+import { createThread, uploadFile } from "../utils/api";
 import AuthContext from "../context/AuthContext";
+import "./CreateThread.css";
 
 function CreateThread() {
-
-  const {user} = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   const history = useHistory();
+  const location = useLocation();
 
-  const [threads, setThreads] = useState<{content:string,parentThread:string | null}>({content:'', parentThread: null});
+  const [threads, setThreads] = useState<{
+    content: string;
+    parentThread: string | null;
+    image?: string;
+  }[]>([]);
 
-  const createThreadHandler=()=>{
-    createThread({...threads, token: user?.token}).then((res)=>{
-      history.goBack();
-    }).catch((err)=>{
-      console.log('Failed to create thread', err);
-      
-    })
+  const createThreadHandler = () => {
+    createThread({ ...threads, token: user?.token })
+      .then((res) => {
+        history.goBack();
+      })
+      .catch((err) => {
+        console.log("Failed to create thread", err);
+      });
+  };
+
+  function openFile() {
+    document.getElementById("file-input")?.click();
   }
+
+  const imageHandler = async (e: any) => {
+    /* try {
+      if (user) {
+        const file = e.target.files[0];
+        const formData = new FormData();
+        formData.append("image", file);
+
+        uploadFile(formData, user.token).then((res) => {
+          setUpdatedInfo({ ...updatedInfo, profile: URL + res.data?.slice(1) });
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    } */
+  };
+
+  useIonViewWillEnter(()=>{
+    if(location.state!=undefined || location.state!=null){
+      setThreads
+    }
+  })
 
   return (
     <IonPage>
@@ -53,48 +85,44 @@ function CreateThread() {
         </IonButtons>
         <IonTitle>New Thread</IonTitle>
       </IonToolbar>
-      <IonContent>
+      <IonContent></IonContent>
+      {/* <IonContent>
+      <div style={{ height: "0px", width: "0px", overflow: "hidden" }}>
+          <input
+            onChange={(e) => imageHandler(e)}
+            type="file"
+            id="file-input"
+          />
+        </div>
         <IonGrid>
           <IonRow>
-            <IonCol
-              size="2"
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
+            <IonCol size="2">
+              <div className="line"></div>
               <IonAvatar style={{ width: "2.5rem", height: "2.5rem" }}>
                 <img alt="profile img" src={user?.profile} />
               </IonAvatar>
-              <br />
-              <div
-                style={{
-                  background: "lightgrey",
-                  width: "3px",
-                  height: "100%",
-                }}
-              ></div>
             </IonCol>
             <IonCol>
               <IonRow>
-                <IonLabel>{user?.email?.split('@')[0]}</IonLabel>
+                <IonLabel>{user?.email?.split("@")[0]}</IonLabel>
               </IonRow>
               <IonRow className="ion-no-padding">
                 <IonTextarea
                   autoGrow={true}
                   maxlength={150}
-                  counter={true}
                   placeholder="Start a thread..."
                   autofocus={true}
                   mode="ios"
                   value={threads.content}
-                  onIonInput={(e)=>{
-                    if(e.target.value){
-                      setThreads({...threads,content:e.target.value})
+                  onIonInput={(e) => {
+                    if (e.target.value) {
+                      setThreads({ ...threads, content: e.target.value });
                     }
                   }}
                 ></IonTextarea>
+              </IonRow>
+              <IonRow className="ion-no-padding">
+                <IonIcon size="large" icon={attachOutline}></IonIcon>
               </IonRow>
             </IonCol>
           </IonRow>
@@ -103,10 +131,16 @@ function CreateThread() {
       <IonFooter>
         <IonToolbar color={"light"}>
           <IonButtons slot="end">
-            <IonButton onClick={createThreadHandler} disabled={threads.content==''} color={"secondary"}>Post</IonButton>
+            <IonButton
+              onClick={createThreadHandler}
+              disabled={threads.content == ""}
+              color={"secondary"}
+            >
+              Post
+            </IonButton>
           </IonButtons>
         </IonToolbar>
-      </IonFooter>
+      </IonFooter> */}
     </IonPage>
   );
 }

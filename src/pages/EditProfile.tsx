@@ -18,7 +18,7 @@ import {
 } from "@ionic/react";
 import { close } from "ionicons/icons";
 import React, { useContext, useState } from "react";
-import { useHistory } from "react-router";
+import { useHistory } from "react-router-dom";
 import { updateUserProfile, uploadFile } from "../utils/api";
 import { URL } from "../utils/constants";
 import AuthContext from "../context/AuthContext";
@@ -26,7 +26,7 @@ import AuthContext from "../context/AuthContext";
 function EditProfile() {
   const history = useHistory();
 
-  const {user} = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   const [updatedInfo, setUpdatedInfo] = useState<{
     name: string | null | undefined;
@@ -88,26 +88,24 @@ function EditProfile() {
   };
 
   function openFile() {
-   document.getElementById("file-input")?.click();
- }
+    document.getElementById("file-input")?.click();
+  }
 
-  const imageHandler=async(e:any)=>{
+  const imageHandler = async (e: any) => {
     try {
-     
-      if(user){
-        const file = e.target.files[0]
-      const formData = new FormData()
-      formData.append('image', file)
+      if (user) {
+        const file = e.target.files[0];
+        const formData = new FormData();
+        formData.append("image", file);
 
-      uploadFile(formData, user.token).then((res)=>{
-        setUpdatedInfo({...updatedInfo,profile:URL+res.data?.slice(1)})
-      });
+        uploadFile(formData, user.token).then((res) => {
+          setUpdatedInfo({ ...updatedInfo, profile: URL + res.data?.slice(1) });
+        });
       }
-      
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   return (
     <IonPage>
@@ -128,7 +126,11 @@ function EditProfile() {
       </IonToolbar>
       <IonContent>
         <div style={{ height: "0px", width: "0px", overflow: "hidden" }}>
-          <input onChange={(e)=> imageHandler(e)} type="file" id="file-input" />
+          <input
+            onChange={(e) => imageHandler(e)}
+            type="file"
+            id="file-input"
+          />
         </div>
         <IonCard mode="ios">
           <IonCardContent>

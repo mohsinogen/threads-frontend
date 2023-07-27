@@ -20,12 +20,14 @@ import {
 } from "ionicons/icons";
 import React, { useEffect, useState } from "react";
 import { timeSince } from "../../utils/helper";
-import { useHistory } from "react-router";
+import { useHistory } from "react-router-dom";
 import { likeThread } from "../../utils/api";
-
+import "./ThreadComponent.css";
+import Thread from "../../models/thread.model";
+import User from "../../models/user.model";
 interface ThreadComponentProps {
-  data: any;
-  loggedInUser: any;
+  data: Thread;
+  loggedInUser: User;
   shouldOpen?: boolean;
 }
 function ThreadComponent({
@@ -68,7 +70,8 @@ function ThreadComponent({
       style={{ borderBottom: "1px solid lightgrey" }}
     >
       <IonRow>
-        <IonCol className="flex-centered">
+        <IonCol size="2">
+          <div className="line"></div>
           <IonAvatar
             onClick={(e) => {
               if (!shouldOpen) {
@@ -76,52 +79,64 @@ function ThreadComponent({
                 history.push(`/userprofile/${data.author.email}`);
               }
             }}
-            style={{ width: "2rem", height: "2rem" }}
+            style={{ width: "2.5rem", height: "2.5rem" }}
           >
             <img alt="profile img" src={data.author.profile} />
           </IonAvatar>
         </IonCol>
-        <IonCol className="d-flex" style={{ alignItems: "center" }} size="7">
-          <IonLabel
-            onClick={(e) => {
-              if (!shouldOpen) {
-                e.stopPropagation();
-                history.push(`/userprofile/${data.author.email}`);
-              }
-            }}
-          >
-            {data.author.name}
-          </IonLabel>
-        </IonCol>
-        <IonCol className="flex-centered">
-          <IonLabel>{timeSince(data.createdAt)}</IonLabel>
-        </IonCol>
-        <IonCol className="flex-centered">
-          <IonIcon color="primary" icon={ellipsisHorizontal}></IonIcon>
-        </IonCol>
-      </IonRow>
-      <IonRow>
-        <IonCol>{data.content}</IonCol>
-      </IonRow>
-      <IonRow className="ion-padding-top">
-        <IonCol size="2">
-          <IonIcon
-            color={!isLiked ? "primary" : "danger"}
-            icon={!isLiked ? heartOutline : heart}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (!isUpdating) {
-                setIsLiked(!isLiked);
-              }
-              likeThreadHandler();
-            }}
-          ></IonIcon>
-        </IonCol>
-        <IonCol size="2">
-          <IonIcon color="primary" icon={chatbubbleOutline}></IonIcon>
-        </IonCol>
-        <IonCol size="2">
-          <IonIcon color="primary" icon={shareOutline}></IonIcon>
+        <IonCol size="10">
+          <IonRow>
+            <IonCol size="7">
+              <IonLabel
+                onClick={(e) => {
+                  if (!shouldOpen) {
+                    e.stopPropagation();
+                    history.push(`/userprofile/${data.author.email}`);
+                  }
+                }}
+              >
+                {data.author.name}
+              </IonLabel>
+            </IonCol>
+            <IonCol size="3" className="flex-centered">
+              <IonLabel>{timeSince(data.createdAt)}</IonLabel>
+            </IonCol>
+            <IonCol size="2" className="flex-centered">
+              <IonIcon color="primary" icon={ellipsisHorizontal}></IonIcon>
+            </IonCol>
+          </IonRow>
+
+          <IonRow>
+            <IonCol>{data.content}</IonCol>
+          </IonRow>
+
+          <IonRow className="ion-padding-top">
+            <IonCol size="2">
+              <IonIcon
+                color={!isLiked ? "primary" : "danger"}
+                icon={!isLiked ? heartOutline : heart}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!isUpdating) {
+                    setIsLiked(!isLiked);
+                  }
+                  likeThreadHandler();
+                }}
+              ></IonIcon>
+            </IonCol>
+            <IonCol size="2">
+              <IonIcon color="primary" icon={chatbubbleOutline}
+              onClick={(e) => {
+                  e.stopPropagation();
+                  history.push(`/createthread`,{data});
+                
+              }}
+              ></IonIcon>
+            </IonCol>
+            <IonCol size="2">
+              <IonIcon color="primary" icon={shareOutline}></IonIcon>
+            </IonCol>
+          </IonRow>
         </IonCol>
       </IonRow>
     </IonGrid>

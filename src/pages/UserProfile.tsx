@@ -20,12 +20,17 @@ import {
 } from "@ionic/react";
 import { globeOutline, linkOutline, menu } from "ionicons/icons";
 import React, { useContext, useEffect, useState } from "react";
-import { useHistory, useParams } from "react-router";
+import { useHistory, useParams } from "react-router-dom";
 import ThreadList from "../components/ThreadList/ThreadList";
-import { getThreadsByUser, getUserByEmail } from "../utils/api";
+import {
+  followUnfollowUser,
+  getThreadsByUser,
+  getUserByEmail,
+} from "../utils/api";
 import { Browser } from "@capacitor/browser";
 import AuthContext from "../context/AuthContext";
 import User from "../models/user.model";
+import ProfileCard from "../components/ProfileCard/ProfileCard";
 
 function UserProfile() {
   const { userEmail } = useParams<{ userEmail: string }>();
@@ -37,6 +42,7 @@ function UserProfile() {
   const { user, logout } = useContext(AuthContext);
 
   const [userProfileData, setUserProfileData] = useState<User | null>(null);
+  const [isFollowed, setIsFollowed] = useState<boolean>(false);
 
   useEffect(() => {
     if (user && userEmail) {
@@ -44,7 +50,7 @@ function UserProfile() {
     } else {
       history.goBack();
     }
-  }, [user]);
+  }, [user, isFollowed]);
 
   const [present] = useIonActionSheet();
 
@@ -57,7 +63,10 @@ function UserProfile() {
       setUserProfileData(response.data[0]);
 
       if (response.data[0] && user) {
-        getThreadListByUser(user.token, page, response.data[0]?._id);
+        if (response.data[0].followers.includes(user._id)) {
+          setIsFollowed(true);
+        }
+        getThreadListByUser(user.token, 1, response.data[0]?._id);
       }
     } catch (error) {
       console.log(error);
@@ -119,19 +128,33 @@ function UserProfile() {
       });
   };
 
-  const openBioLink = async (url: string) => {
-    await Browser.open({ url });
+  
+
+  const followUnfollowHandler = () => {
+    if (userProfileData && user) {
+      followUnfollowUser(userProfileData._id, user.token)
+        .then((res) => {
+          console.log("follow response", res.data.data);
+
+          if (res.data.data == "followed") {
+            setIsFollowed(true);
+          } else {
+            setIsFollowed(false);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
 
   return (
     <IonPage>
       <IonToolbar>
-
-      <IonButtons slot="start">
-          <IonBackButton defaultHref='/home'></IonBackButton>
+        <IonButtons slot="start">
+          <IonBackButton defaultHref="/home"></IonBackButton>
         </IonButtons>
-        
-        <IonTitle>Thread</IonTitle>
+
         <IonButtons slot="start">
           <IonIcon slot="icon-only" icon={globeOutline}></IonIcon>
         </IonButtons>
@@ -148,121 +171,8 @@ function UserProfile() {
       </IonToolbar>
       <IonContent>
         <IonCol>
-          <div className="ion-padding-horizontal ion-padding-top">
-            <IonRow>
-              <IonCol size="9">
-                <IonRow>
-                  <h1>{userProfileData?.name}</h1>
-                </IonRow>
-                <IonRow>
-                  <IonCol
-                    size="9"
-                    className="d-flex"
-                    style={{
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    {userProfileData?.email?.split("@")[0]}
-                    <IonBadge mode="ios" color="medium">
-                      threads.net
-                    </IonBadge>
-                  </IonCol>
-                </IonRow>
-              </IonCol>
-              <IonCol size="3">
-                <IonAvatar>
-                  <img alt="profile img" src={userProfileData?.profile} />
-                </IonAvatar>
-              </IonCol>
-            </IonRow>
-            {userProfileData?.bio && (
-              <IonRow>
-                <IonCol size="6">
-                  <p>{userProfileData?.bio}</p>
-                </IonCol>
-              </IonRow>
-            )}
-            {userProfileData?.link && (
-              <IonRow>
-                <IonCol>
-                  <IonText
-                    onClick={() => openBioLink(userProfileData.link)}
-                    className="d-flex"
-                    style={{
-                      alignItems: "center",
-                      justifyContent: "flex-start",
-                    }}
-                    color={"secondary"}
-                  >
-                    <IonIcon color="secondary" icon={linkOutline} />
-                    {userProfileData?.link.length > 40
-                      ? userProfileData.link.slice(8, 40) + "..."
-                      : userProfileData.link.slice(8)}
-                  </IonText>
-                </IonCol>
-              </IonRow>
-            )}
-            <IonRow>
-              <IonCol>
-                <strong>{userProfileData?.followers?.length} followers</strong>
-              </IonCol>
-            </IonRow>
-
-            {user && userProfileData && (
-              <IonRow className="ion-no-padding ion-padding-top">
-                {user?._id == userProfileData?._id ? (
-                  <>
-                    <IonCol size="6">
-                      <IonButton
-                        mode="ios"
-                        size="small"
-                        expand="block"
-                        fill="outline"
-                        onClick={() => {
-                          history.push("/editprofile");
-                        }}
-                      >
-                        Edit profile
-                      </IonButton>
-                    </IonCol>
-                    <IonCol size="6">
-                      <IonButton
-                        mode="ios"
-                        size="small"
-                        expand="block"
-                        fill="outline"
-                      >
-                        Share profile
-                      </IonButton>
-                    </IonCol>
-                  </>
-                ) : userProfileData?.followers.includes(user._id) ? (
-                  <IonCol>
-                    <IonButton
-                      mode="ios"
-                      size="small"
-                      expand="block"
-                      fill="outline"
-                    >
-                      Unfollow
-                    </IonButton>
-                  </IonCol>
-                ) : (
-                  <IonCol>
-                    <IonButton
-                      mode="ios"
-                      size="small"
-                      expand="block"
-                      fill="solid"
-                    >
-                      Follow
-                    </IonButton>
-                  </IonCol>
-                )}
-              </IonRow>
-            )}
-          </div>
+          
+          <ProfileCard followUnfollowHandler={followUnfollowHandler} userProfile={userProfileData} />
 
           <IonSegment
             onIonChange={(ev: CustomEvent) => {
