@@ -16,8 +16,8 @@ const updateUserProfile=async(data:any)=>{
     return response;
 }
 
-const createThread=async(data:any)=>{
-    const response = await Axios.post(URL+`api/threads`, {...data}, {headers:{'Authorization':`Bearer ${data.token}`}});
+const createThread=async(data:any, token:string)=>{
+    const response = await Axios.post(URL+`api/threads`, data, {headers:{'Authorization':`Bearer ${token}`}});
     return response;
 }
 

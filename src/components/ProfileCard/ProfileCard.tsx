@@ -70,9 +70,13 @@ function ProfileCard({
       
       
         <IonRow>
-          <IonCol>
+          {(userProfile && userProfile.link!==undefined) && <IonCol>
             {userProfile ? ( <IonText
-              onClick={() => openBioLink(userProfile.link)}
+              onClick={() => {
+                if(userProfile.link!=undefined){
+                  openBioLink(userProfile.link)
+                }
+              }}
               className="d-flex"
               style={{
                 alignItems: "center",
@@ -86,7 +90,7 @@ function ProfileCard({
                 : userProfile.link.slice(8)}
             </IonText>):(<IonSkeletonText animated={true} />)}
            
-          </IonCol>
+          </IonCol>}
         </IonRow>
       
       <IonRow>

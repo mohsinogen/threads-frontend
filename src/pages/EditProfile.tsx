@@ -54,7 +54,7 @@ function EditProfile() {
         email: user.email,
         link: user.link,
         name: user.name,
-        profile: user.profile,
+        profile: user.profile? user.profile : '',
       });
     }
   });

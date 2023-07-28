@@ -22,6 +22,14 @@ import { useHistory, useLocation, useParams } from "react-router-dom";
 import { createThread, uploadFile } from "../utils/api";
 import AuthContext from "../context/AuthContext";
 import "./CreateThread.css";
+import Thread from "../models/thread.model";
+import { LocationState } from "history";
+
+interface NewThread {
+  content: string;
+  image?: string;
+  parentThread: Thread | null;
+}
 
 function CreateThread() {
   const { user } = useContext(AuthContext);
@@ -29,20 +37,39 @@ function CreateThread() {
   const history = useHistory();
   const location = useLocation();
 
-  const [threads, setThreads] = useState<{
-    content: string;
-    parentThread: string | null;
-    image?: string;
-  }[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const createThreadHandler = () => {
-    createThread({ ...threads, token: user?.token })
-      .then((res) => {
+  const state = location.state as
+    | {
+        data: Thread;
+      }
+    | undefined;
+
+  const [threads, setThreads] = useState<NewThread[]>([
+    { content: "", image: "", parentThread: null },
+  ]);
+  const [pageTitle, setPageTitle] = useState<string>("New Thread");
+
+  const createThreadHandler = async () => {
+    if (user) {
+      try {
+        threads.map(async (item) => {
+          const body: { content: string; parentThread: null | string } = {
+            content: item.content,
+            parentThread: null,
+          };
+          if (item.parentThread) {
+            body.parentThread = item.parentThread._id;
+          }
+          const response = await createThread(body, user.token);
+        });
+
         history.goBack();
-      })
-      .catch((err) => {
-        console.log("Failed to create thread", err);
-      });
+      } catch (error) {
+        console.log(error);
+        
+      }
+    }
   };
 
   function openFile() {
@@ -65,11 +92,23 @@ function CreateThread() {
     } */
   };
 
-  useIonViewWillEnter(()=>{
-    if(location.state!=undefined || location.state!=null){
-      setThreads
+  useIonViewWillEnter(() => {
+    if (state?.data != null || state?.data != undefined) {
+      setThreads([{ content: "", image: "", parentThread: state.data }]);
+      setPageTitle("Reply");
     }
-  })
+  });
+
+  const handleInputChange = (
+    index: number,
+    field: keyof NewThread,
+    value: string
+  ) => {
+    const updatedThreads = threads.map((thread, i) =>
+      i === index ? { ...thread, [field]: value } : thread
+    );
+    setThreads(updatedThreads);
+  };
 
   return (
     <IonPage>
@@ -83,64 +122,100 @@ function CreateThread() {
             icon={close}
           ></IonIcon>
         </IonButtons>
-        <IonTitle>New Thread</IonTitle>
+        <IonTitle>{pageTitle}</IonTitle>
       </IonToolbar>
-      <IonContent></IonContent>
-      {/* <IonContent>
-      <div style={{ height: "0px", width: "0px", overflow: "hidden" }}>
+      <IonContent>
+        <div style={{ height: "0px", width: "0px", overflow: "hidden" }}>
           <input
             onChange={(e) => imageHandler(e)}
             type="file"
             id="file-input"
           />
         </div>
-        <IonGrid>
-          <IonRow>
-            <IonCol size="2">
-              <div className="line"></div>
-              <IonAvatar style={{ width: "2.5rem", height: "2.5rem" }}>
-                <img alt="profile img" src={user?.profile} />
-              </IonAvatar>
-            </IonCol>
-            <IonCol>
+        {user &&
+          threads.map((item, i) => (
+            <IonGrid key={i}>
+              {item.parentThread && (
+                <IonRow>
+                  <IonCol size="2">
+                    <div className="line"></div>
+                    <IonAvatar style={{ width: "2.5rem", height: "2.5rem" }}>
+                      <img
+                        alt="profile img"
+                        src={item.parentThread.author?.profile}
+                      />
+                    </IonAvatar>
+                  </IonCol>
+                  <IonCol>
+                    <IonRow>
+                      <IonLabel>
+                        {item.parentThread?.author?.email?.split("@")[0]}
+                      </IonLabel>
+                    </IonRow>
+                    <IonRow className="ion-no-padding">
+                      <IonTextarea
+                        autoGrow={true}
+                        maxlength={150}
+                        placeholder="Start a thread..."
+                        autofocus={true}
+                        mode="ios"
+                        value={item.parentThread?.content}
+                        readonly={true}
+                      ></IonTextarea>
+                    </IonRow>
+                  </IonCol>
+                </IonRow>
+              )}
               <IonRow>
-                <IonLabel>{user?.email?.split("@")[0]}</IonLabel>
+                <IonCol size="2">
+                  {i != threads.length - 1 && <div className="line"></div>}
+                  <IonAvatar style={{ width: "2.5rem", height: "2.5rem" }}>
+                    <img alt="profile img" src={user?.profile} />
+                  </IonAvatar>
+                </IonCol>
+                <IonCol>
+                  <IonRow>
+                    <IonLabel>{user.email?.split("@")[0]}</IonLabel>
+                  </IonRow>
+                  <IonRow className="ion-no-padding">
+                    <IonTextarea
+                      autoGrow={true}
+                      maxlength={150}
+                      placeholder="Start a thread..."
+                      autofocus={true}
+                      mode="ios"
+                      value={item.content}
+                      readonly={false}
+                      onIonInput={(e) => {
+                        handleInputChange(
+                          i,
+                          "content",
+                          e.target.value ? e.target.value : ""
+                        );
+                      }}
+                    ></IonTextarea>
+                  </IonRow>
+                  <IonRow className="ion-no-padding">
+                    <IonIcon size="large" icon={attachOutline}></IonIcon>
+                  </IonRow>
+                </IonCol>
               </IonRow>
-              <IonRow className="ion-no-padding">
-                <IonTextarea
-                  autoGrow={true}
-                  maxlength={150}
-                  placeholder="Start a thread..."
-                  autofocus={true}
-                  mode="ios"
-                  value={threads.content}
-                  onIonInput={(e) => {
-                    if (e.target.value) {
-                      setThreads({ ...threads, content: e.target.value });
-                    }
-                  }}
-                ></IonTextarea>
-              </IonRow>
-              <IonRow className="ion-no-padding">
-                <IonIcon size="large" icon={attachOutline}></IonIcon>
-              </IonRow>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
+            </IonGrid>
+          ))}
       </IonContent>
       <IonFooter>
         <IonToolbar color={"light"}>
           <IonButtons slot="end">
             <IonButton
               onClick={createThreadHandler}
-              disabled={threads.content == ""}
+              disabled={threads.some((item) => item.content === "") || isLoading}
               color={"secondary"}
             >
               Post
             </IonButton>
           </IonButtons>
         </IonToolbar>
-      </IonFooter> */}
+      </IonFooter>
     </IonPage>
   );
 }

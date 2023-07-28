@@ -117,7 +117,7 @@ function Profile() {
   };
 
   const openBioLink = async () => {
-    if (userProfileData) {
+    if (userProfileData && userProfileData.link!=undefined) {
       await Browser.open({ url: userProfileData.link });
     }
   };

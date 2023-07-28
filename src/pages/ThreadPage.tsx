@@ -1,8 +1,12 @@
 import {
   IonBackButton,
+  IonButton,
   IonButtons,
   IonContent,
+  IonIcon,
   IonPage,
+  IonRefresher,
+  IonRefresherContent,
   IonTitle,
   IonToolbar,
   useIonViewWillEnter,
@@ -12,9 +16,12 @@ import { useParams } from "react-router-dom";
 import { getThreadById } from "../utils/api";
 import ThreadComponent from "../components/ThreadComponent/ThreadComponent";
 import AuthContext from "../context/AuthContext";
-
+import "./ThreadPage.css";
+import { arrowUp, refresh } from "ionicons/icons";
 function ThreadPage() {
-  const [data, setData] = useState<any>();
+  const [parentThread, setParentThread] = useState<any>();
+  const [thread, setThread] = useState<any>();
+  const [showParent, setShowParent] = useState<boolean>(false);
 
   const { user } = useContext(AuthContext);
 
@@ -25,8 +32,17 @@ function ThreadPage() {
 
     if (user) {
       getThreadById(params.id, user.token)
-        .then((res) => {
-          setData(res.data);
+        .then(async (res) => {
+          setThread(res.data);
+          console.log(res.data.parentThread);
+
+          if (res.data.parentThread !== "" && res.data.parentThread !== null) {
+            const parentThread = await getThreadById(
+              res.data.parentThread,
+              user.token
+            );
+            setParentThread(parentThread.data);
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -43,8 +59,36 @@ function ThreadPage() {
         <IonTitle>Thread</IonTitle>
       </IonToolbar>
       <IonContent>
-        {data && user && (
-          <ThreadComponent shouldOpen={false} loggedInUser={user} data={data} />
+        {(!showParent && thread?.parentThread!=null) && (
+          <div className="flex-centered">
+            <IonButton
+            onClick={() => setShowParent(true)}
+            className="ion-no-padding"
+            style={{ width: "40px", height: "40px", textAlign:"center" }}
+            shape="round"
+          >
+            <IonIcon size="large" slot="icon-only" icon={arrowUp}></IonIcon>
+          </IonButton>
+          </div>
+        )}
+
+        {user && (
+          <>
+            {parentThread && showParent && (
+              <ThreadComponent
+                shouldOpen={false}
+                loggedInUser={user}
+                data={parentThread}
+              />
+            )}
+            {thread && (
+              <ThreadComponent
+                shouldOpen={false}
+                loggedInUser={user}
+                data={thread}
+              />
+            )}
+          </>
         )}
       </IonContent>
     </IonPage>

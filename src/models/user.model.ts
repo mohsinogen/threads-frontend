@@ -3,13 +3,13 @@ export default interface User {
     name: string;
     email: string;
     isAdmin: boolean;
-    profile: string;
+    profile?: string;
     createdAt: string;
     updatedAt: string;
     __v: any;
-    bio: string;
+    bio?: string;
     followers: string[];
     following: string[];
-    link: string;
+    link?: string;
     token: string;
   }
