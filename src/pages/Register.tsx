@@ -16,11 +16,10 @@ import TextButton from "../components/TextButton/TextButton";
 import TextInput from "../components/TextInput/TextInput";
 import { login, register } from "../utils/api";
 import { Redirect, useHistory } from "react-router-dom";
-import AuthContext from "../context/AuthContext";
 
 function Register() {
 
-  const { user } = useContext(AuthContext)
+  const  user:any  = {}
   const history = useHistory()
 
   const [name, setName] = useState<string | undefined | null>('');

@@ -24,6 +24,7 @@
     "@types/react-router": "^5.1.11",
     "@types/react-router-dom": "^5.1.7",
     "axios": "^1.4.0",
+    "firebase": "^10.3.0",
     "history": "^4.9.0",
     "ionicons": "^7.0.0",
     "javascript-time-ago": "^2.5.9",

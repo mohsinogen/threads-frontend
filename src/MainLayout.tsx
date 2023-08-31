@@ -1,0 +1,61 @@
+import React from 'react'
+import { add, home, notifications, person, search } from "ionicons/icons";
+import { IonIcon, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from '@ionic/react';
+import { AuthenticatedRoute } from './context/AuthContext';
+import { Route, useLocation } from 'react-router-dom';
+import Login from './pages/Login';
+import Home from './pages/Home';
+
+function MainLayout() {
+
+
+  const loaction = useLocation();
+
+  const hiddenTabRoutes = [
+    "/login",
+    "/register",
+    "/editprofile",
+    "/createthread",
+    "/thread",
+  ];
+
+  // Check if the current route is in the hiddenTabRoutes array
+  const isTabHidden = hiddenTabRoutes.includes(location.pathname);
+  return (
+    <IonTabs>
+            <IonRouterOutlet>
+              <Route exact path="/" component={Login} />
+              <AuthenticatedRoute>
+                <Route exact path="/home" component={Home} />
+              </AuthenticatedRoute>
+            </IonRouterOutlet>
+
+            <IonTabBar
+              slot="bottom"
+              style={!isTabHidden ? {} : { display: "none" }}
+            >
+              <IonTabButton tab="home" href="/home">
+                <IonIcon icon={home} />
+              </IonTabButton>
+
+              <IonTabButton tab="search" href="/search">
+                <IonIcon icon={search} />
+              </IonTabButton>
+
+              <IonTabButton tab="createthread" href="/createthread">
+                <IonIcon icon={add} />
+              </IonTabButton>
+
+              <IonTabButton tab="notifications" href="/notifications">
+                <IonIcon icon={notifications} />
+              </IonTabButton>
+
+              <IonTabButton tab="profile" href={`/profile`}>
+                <IonIcon icon={person} />
+              </IonTabButton>
+            </IonTabBar>
+          </IonTabs>
+  )
+}
+
+export default MainLayout

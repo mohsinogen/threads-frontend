@@ -1,17 +1,17 @@
 import React from "react";
-import { Redirect, Route } from "react-router-dom";
+import { Redirect, Route, useLocation } from "react-router-dom";
 import {
   IonApp,
   IonIcon,
+  IonLoading,
   IonRouterOutlet,
   IonTabBar,
   IonTabButton,
   IonTabs,
   setupIonicReact,
+  useIonRouter,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
-import Home from "./pages/Home";
-import ViewMessage from "./pages/ViewMessage";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -32,21 +32,39 @@ import "@ionic/react/css/display.css";
 /* Theme variables */
 import "./theme/variables.css";
 import Login from "./pages/Login";
-import { person, home, search, notifications, add } from "ionicons/icons";
-import MainApp from "./MainApp";
-import { AuthProvider } from "./context/AuthContext";
+import Home from "./pages/Home";
+import {
+  AuthProvider,
+  AuthenticatedRoute,
+  useAuth,
+} from "./context/AuthContext";
+import MainLayout from "./MainLayout";
+
 
 setupIonicReact();
 
+const AuthLayout: React.FC = () => {
+  const { initialized } = useAuth();
+
+
+  if (!initialized) <></>;
+
+  return (
+    <>
+      <IonApp>
+        <IonReactRouter>
+          <MainLayout />
+        </IonReactRouter>
+      </IonApp>
+    </>
+  );
+};
+
 const App: React.FC = () => {
   return (
-    <IonApp>
-      <AuthProvider>
-      <IonReactRouter>
-        <MainApp />
-      </IonReactRouter>
-      </AuthProvider>
-    </IonApp>
+    <AuthProvider>
+      <AuthLayout />
+    </AuthProvider>
   );
 };
 

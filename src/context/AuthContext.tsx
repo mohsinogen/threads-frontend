@@ -1,85 +1,48 @@
-import React, {
-  PropsWithChildren,
-  createContext,
-  useEffect,
-  useState,
-} from "react";
-import { URL } from "../utils/constants";
-import Axios from "../utils/helper";
-import User from "../models/user.model";
+import { User, onAuthStateChanged, signOut } from 'firebase/auth';
+import React,{ PropsWithChildren, createContext, useContext, useEffect, useState } from 'react';
+import { FIREBASE_AUTH } from '../config/FirebaseConfig';
+import { Redirect } from 'react-router';
 
-
-
-// Define the context interface
-interface AuthContextType {
-  user: User | null;
-  login: (email: string, password: string) => Promise<any>;
-  register: (name: string, email: string, password: string) => Promise<any>;
-  logout: ()=> void
+interface AuthProps {
+  user?: User | null;
+  initialized?: boolean;
+  logout?: () => Promise<void>;
 }
 
-// Create the initial context value
-const initialContextValue: AuthContextType = {
-  user: null,
-  login: async () => {/*  */},
-  register: async () => {/*  */},
-  logout: () => {/*  */}
-};
+export const AuthContext = createContext<AuthProps>({});
 
-// Create the Auth Context
-const AuthContext = createContext<AuthContextType>(initialContextValue);
+export function useAuth() {
+  return useContext(AuthContext);
+}
 
-// Export the Auth Context for use in components
-export default AuthContext;
-
-// Create and export the Auth Provider component
-export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
-  // State to hold the user information
+export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [user, setUser] = useState<User | null>(null);
+  const [initialized, setInitialized] = useState<boolean>(false);
 
-  // useEffect to retrieve user information from localStorage
   useEffect(() => {
-    const storedUser = localStorage.getItem("userInfo");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    onAuthStateChanged(FIREBASE_AUTH, (user) => {
+      console.log('AUTH CHANGED: ', user);
+
+      setUser(user);
+      setInitialized(true);
+    });
   }, []);
 
-  // Function to handle user login
-  const login = async (email: string, password: string) => {
-    const response = await Axios.post(URL + `api/users/login`, {
-      email,
-      password,
-    });
-    // Assuming the API returns the user object upon successful login
-    const user = response.data.data;
-    setUser(user);
-    localStorage.setItem("userInfo", JSON.stringify(user));
-    return response;
+  const value = {
+    user,
+    initialized,
+    logout: () => signOut(FIREBASE_AUTH),
   };
 
-  // Function to handle user registration
-  const register = async (name: string, email: string, password: string) => {
-    const response = await Axios.post(URL + `api/users`, {
-      email,
-      password,
-      name,
-    });
-    // Assuming the API returns the user object upon successful registration
-    const user = response.data.data;
-    setUser(user);
-    localStorage.setItem("userInfo", JSON.stringify(user));
-    return response;
-  };
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
 
-  const logout = () =>{
-    setUser(null);
-    localStorage.removeItem("userInfo")
+export const AuthenticatedRoute = ({ children }: any) => {
+  const { user, initialized } = useAuth();
+
+  if (!initialized) {
+    return;
   }
 
-  return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return user ? children : <Redirect to="/" />;
 };

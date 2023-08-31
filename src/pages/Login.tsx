@@ -5,24 +5,29 @@ import {
   IonPage,
   IonRow,
   IonText,
+  useIonLoading,
+  useIonRouter,
   useIonToast,
 } from "@ionic/react";
 import React, { useContext, useEffect, useState } from "react";
 import TextButton from "../components/TextButton/TextButton";
 import TextInput from "../components/TextInput/TextInput";
 import { Redirect, Route, useHistory } from "react-router-dom";
-import AuthContext from "../context/AuthContext";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { FirebaseError } from "firebase/app";
+import { FIREBASE_AUTH } from "../config/FirebaseConfig";
+import { useAuth } from "../context/AuthContext";
 
 function Login() {
   const [email, setEmail] = useState<string | undefined | null>("");
   const [password, setPassword] = useState<string | undefined | null>("");
-  const [loading, setLoading] = useState<boolean>(false);
 
-  const { login, user } = useContext(AuthContext);
-
-  const history = useHistory();
-
+const [show, hide] = useIonLoading()
   const [present] = useIonToast();
+
+  const router = useIonRouter();
+
+  const { user } = useAuth();
 
   const presentToast = (message: string) => {
     present({
@@ -33,26 +38,45 @@ function Login() {
     });
   };
 
-  const loginHandler = () => {
-    if (email && password) {
-      login(email, password)
-        .then((res) => {
-          history.push("/home");
-        })
-        .catch((error) => {
-          console.log(error);
-          presentToast(
-            error.response.data.message
-              ? error.response.data.message
-              : error.message
-          );
+  /* const onRegister = async () => {
+    const { email, password } = getValues();
+    await show();
+    try {
+      const user = await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        present({
+          header: 'Registration failed',
+          message: error.message,
+          buttons: ['OK'],
         });
+      }
+    } finally {
+      await hide();
+    }
+  }; */
+
+
+  const loginHandler = async () => {
+    if (email && password) {
+      await show();
+    try {
+      const user = await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        presentToast(
+         error.message);
+      }
+    } finally {
+      await hide();
+    }
     }
   };
-
-  if (user) {
-   return <Redirect to={"/home"} />;
-  }
+  useEffect(() => {
+    if (user) {
+      router.push('/home', 'forward', 'replace');
+    }
+  }, [user]);
 
   return (
     <IonPage>
@@ -91,7 +115,7 @@ function Login() {
               New User?{" "}
               <IonText
                 onClick={() => {
-                  history.push("/register");
+                  router.push("/register");
                 }}
                 color={"secondary"}
               >
