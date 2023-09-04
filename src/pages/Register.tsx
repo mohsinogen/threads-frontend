@@ -9,6 +9,9 @@ import {
   IonTabButton,
   IonTabs,
   IonText,
+  useIonLoading,
+  useIonRouter,
+  useIonToast,
 } from "@ionic/react";
 import { home } from "ionicons/icons";
 import React, { useContext, useEffect, useState } from "react";
@@ -16,38 +19,73 @@ import TextButton from "../components/TextButton/TextButton";
 import TextInput from "../components/TextInput/TextInput";
 import { login, register } from "../utils/api";
 import { Redirect, useHistory } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { FIREBASE_AUTH, FIREBASE_DB } from "../config/FirebaseConfig";
+import { FirebaseError } from "firebase/app";
+import { doc, setDoc } from "firebase/firestore";
 
 function Register() {
 
-  const  user:any  = {}
+  const defaultProfileImg = 'https://firebasestorage.googleapis.com/v0/b/threads-ionic.appspot.com/o/profile%2Fuser.png?alt=media&token=de97f193-1fd9-4780-8e46-e937d637c946';
+
   const history = useHistory()
 
   const [name, setName] = useState<string | undefined | null>('');
   const [email, setEmail] = useState<string | undefined | null>('');
   const [password, setPassword] = useState<string | undefined | null>('');
   const [confirmPassword, setConfirmPassword] = useState<string | undefined | null>('');
-  const [loading, setLoading] = useState<boolean>(false);
 
-  const registerHandler = () => {
+  const [show, hide] = useIonLoading()
+  const [present] = useIonToast();
+
+  const router = useIonRouter();
+
+  const { user } = useAuth();
+
+  const registerHandler = async () => {
 
     if(name && email && password){
-      register(name, email, password).then((res) => {
-          console.log(res.data.data);
-          localStorage.setItem('userInfo', JSON.stringify(res.data.data))
-          history.push('/home')
-    
-        }).catch((error) => {
-          console.log(error);
-    
-        });
+      await show();
+      try {
+        const user = await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
+        console.log(user);
+
+        const newUser = {
+          uid: user.user.uid,
+          email: user.user.email,
+          profile: defaultProfileImg,
+          name: name,
+          bio: '',
+          link: '',
+          following: [],
+          followers: [],
+        }
+        
+        const ref = doc(FIREBASE_DB, `users/${user.user.uid}`);
+        setDoc(ref, { ...newUser });
+
+      } catch (error) {
+        if (error instanceof FirebaseError) {
+          present({
+            header: 'Registration failed',
+            message: error.message,
+            buttons: ['OK'],
+          });
+        }
+      } finally {
+        await hide();
+      }
     }
 
   }
 
+  useEffect(() => {
+    if (user) {
+      router.push('/home', 'forward', 'replace');
+    }
+  }, [user]);
 
-if(user){
-  return <Redirect to="/home" />
-}
   return (
     <IonPage>
       <IonContent className="ion-padding">

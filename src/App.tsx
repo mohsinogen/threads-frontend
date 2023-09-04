@@ -43,29 +43,22 @@ import MainLayout from "./MainLayout";
 
 setupIonicReact();
 
-const AuthLayout: React.FC = () => {
+const App: React.FC = () => {
   const { initialized } = useAuth();
 
 
   if (!initialized) <></>;
 
   return (
-    <>
-      <IonApp>
+    <IonApp>
+        <AuthProvider>
         <IonReactRouter>
           <MainLayout />
         </IonReactRouter>
+      </AuthProvider>
       </IonApp>
-    </>
   );
 };
 
-const App: React.FC = () => {
-  return (
-    <AuthProvider>
-      <AuthLayout />
-    </AuthProvider>
-  );
-};
 
 export default App;

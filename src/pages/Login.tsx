@@ -38,25 +38,6 @@ const [show, hide] = useIonLoading()
     });
   };
 
-  /* const onRegister = async () => {
-    const { email, password } = getValues();
-    await show();
-    try {
-      const user = await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
-    } catch (error) {
-      if (error instanceof FirebaseError) {
-        present({
-          header: 'Registration failed',
-          message: error.message,
-          buttons: ['OK'],
-        });
-      }
-    } finally {
-      await hide();
-    }
-  }; */
-
-
   const loginHandler = async () => {
     if (email && password) {
       await show();

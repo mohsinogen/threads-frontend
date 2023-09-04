@@ -24,18 +24,10 @@ import { useAuth } from "../context/AuthContext";
 
 const Home: React.FC = () => {
 
-  const [threads, setThreads] = useState<any[]>([]);
-  const [totalPages, setTotalPages] = useState<number>(1);
-  const [page, setPage] = useState<number>(1);
-
-  const { user } = useAuth();
-
-  const router = useIonRouter();
-
   return (
-    <IonPage id="home-page">
+    <IonPage>
       <IonContent fullscreen>
-        <IonHeader collapse="condense">
+        <IonHeader>
           <IonToolbar>
             <IonTitle size="large">Inbox</IonTitle>
           </IonToolbar>
